@@ -1,0 +1,176 @@
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+ScreenManagement:
+    trasition: FadeTransition()
+    IntroScreen:
+    BaseScreen:
+    CombatScreen:
+    ReturnScreen:
+
+
+
+<IntroScreen>:
+    name : 'Intro'
+    Image:
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+        source: 'space.png'
+
+    BoxLayout:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: "Spaced Out"
+            font_size: 75
+            color: 0,0,1,1
+        BoxLayout:
+            Label:
+                id: result
+                font_size: 40
+                text: ''
+        BoxLayout:
+            orientation: 'horizontal'
+            BoxLayout:
+            # "New Game" button: initiates "Base" screen
+            Button:
+                text: "New Game"
+                on_release: app.root.current = 'Base'
+            # "Continue" button: initiates "laod" screen
+            Button:
+                text: "Continue"
+                on_release: app.root.current = 'Combat'
+            # "Quit/Exit" button: exits program
+            Button:
+                text: "Quit"
+                on_release: quit()
+            BoxLayout:
+
+        BoxLayout:
+
+<BaseScreen>:
+    name : 'Base'
+    Image:
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+        source: 'dock.png'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                Label:
+                    text: "      The Ship Yard"
+                    size: self.size
+                    font_size: 50
+                    size: self.texture_size
+            BoxLayout:
+            BoxLayout:
+            Button:
+                text: "Main Menu"
+                on_release: app.root.current = 'Intro'
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: 0.01,0.01,0.01,0.80
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Image:
+                    id: shipImage
+                    allow_stretch: True
+                    keep_ratio: False
+                    pos: self.pos
+                    size: self.size
+                    source: root.selected_ship
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: 0,0,0,0.9
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    text: """Ship Stats:"""
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        id: speedLabel
+                        text: str("Speed: " + str(root.ship_speed))
+                    Label:
+                        id: hpLabel
+                        text: str("HP: " + str(root.ship_hp))
+                    Label:
+                        id: attackLabel
+                        text: str("Attack: " + str(root.ship_attack))
+
+
+        BoxLayout:
+            orientation: 'horizontal'
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    background_color: 1, 1, 1, 1
+                    text: ""
+                    canvas:
+                        Color:
+                            # #263238
+                            rgba: 0, 0, 0, 0
+
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                Button:
+                    background_color:  .25, .25, .25, 0.8
+                    text: "Speed"
+                    on_press: root.selected_ship =  "ship1.png"
+                    on_release: shipImage.source = "ship1.png"
+                    on_release: root.ship_speed = 20
+                    on_release: root.ship_hp = 10
+                    on_release: root.ship_attack = 10
+                Button:
+                    background_color: .25, .25, .25, 0.8
+                    text: "Combat"
+                    on_press: root.selected_ship =  "ship2.png"
+                    on_release: shipImage.source = "ship2.png"
+                    on_release: root.ship_speed = 10
+                    on_release: root.ship_hp = 20
+                    on_release: root.ship_attack = 10
+                Button:
+                    background_color:  .25, .25, .25, 0.8
+                    text: "Defense"
+                    on_press: root.selected_ship ==  "ship3.png"
+                    on_release: shipImage.source = "ship3.png"
+                    on_release: root.ship_speed = 10
+                    on_release: root.ship_hp = 10
+                    on_release: root.ship_attack = 20
+                Button:
+                    background_color: 0, 25, 0, 0.5
+                    text: "LAUNCH MISSION"
+
+
+<CombatScreen>:
+    name: "Combat"
+    PlayerShip:
+        canvas:
+            Ellipse:
+                source: "ship1.png"
+                pos: self.pos
+                size: 50, 50
+
+<ReturnScreen>:
+    BoxLayout:
+        Button:
+            text: 'My settings button'
+        Button:
+            text: 'Back to menu'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'menu'
