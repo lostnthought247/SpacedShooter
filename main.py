@@ -9,22 +9,29 @@ from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.uix.image import Image
 from kivy.clock import Clock
 
+# Initiates application window and features?
+
+
+# Creates a screen obj. used by kivy in kv file
 class IntroScreen(Screen):
-    # A filler class-tool that is used and controled by game .ky file elsewhere
     pass
 
+# Creates a screen obj. used by kivy in kv file
 class BaseScreen(Screen):
     selected_ship = "ship1.png"
     ship_speed = 100
     ship_hp =  100
     ship_attack =  100
 
+# Creates a screen obj. used by kivy in kv file
 class CombatScreen(Screen):
     pass
 
+# Creates a screen obj. used by kivy in kv file
 class ReturnScreen(Screen):
     pass
 
+# Creates the screen manager obj. used by kivy in kv file
 class ScreenManagement(ScreenManager):
     pass
 
@@ -33,28 +40,18 @@ class PlayerShip(Widget):
     HP = None
     Attack = None
 
-
-    # sets velocity of the ship on x and y axis as .ky numeric properties
-    velocity_x = NumericProperty(0)
-    velocity_y = NumericProperty(0)
-
-    # referencelist property so we can use ship.velocity as
-    # a shorthand, just like e.g. w.pos for w.x and w.y
-    velocity = ReferenceListProperty(velocity_x, velocity_y)
+    def move_player(self):
+        newX = self.pos[0] + 10
+        newY = self.pos[1] + 10
+        self.pos = (newX, newY)
 
 
-
-
-# Creates the game instance and display/update controls
+# Game Widget
 class SpaceGame(Widget):
         def update(self, dt):
-            pass
+            self.player.move_player()
 
-        ## Sets background sound
-        # self.sound=SoundLoader.load("music.wav")
-        # self.sound.play()
-
-# Initiates application window and features?
+# Game App
 class SpaceGameApp(App):
     def build(self):
         # Loads and builds view based on SpaceGame.kv file
@@ -64,8 +61,6 @@ class SpaceGameApp(App):
         Clock.schedule_interval(game.update, 1.0 / 60.0)
         return presentation
 
-    def update(self):
-        pass
 
 if __name__ == "__main__":
     SpaceGameApp().run()

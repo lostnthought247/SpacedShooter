@@ -99,6 +99,12 @@ ScreenManagement:
                 Label:
                     text: """Ship Stats:"""
                 BoxLayout:
+                    canvas:
+                        Color:
+                            rgba: .05,.05,.05,0.5
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
                     orientation: 'vertical'
                     Label:
                         id: speedLabel
@@ -132,38 +138,56 @@ ScreenManagement:
                     text: "Speed"
                     on_press: root.selected_ship =  "ship1.png"
                     on_release: shipImage.source = "ship1.png"
-                    on_release: root.ship_speed = 20
-                    on_release: root.ship_hp = 10
-                    on_release: root.ship_attack = 10
+                    on_release: speedLabel.text = "Speed: 150"
+                    on_release: hpLabel.text = "HP: 100"
+                    on_release: attackLabel.text = "Attack: 100"
                 Button:
                     background_color: .25, .25, .25, 0.8
                     text: "Combat"
                     on_press: root.selected_ship =  "ship2.png"
                     on_release: shipImage.source = "ship2.png"
-                    on_release: root.ship_speed = 10
-                    on_release: root.ship_hp = 20
-                    on_release: root.ship_attack = 10
+                    on_release: speedLabel.text = "Speed: 100"
+                    on_release: hpLabel.text = "HP: 100"
+                    on_release: attackLabel.text = "Attack: 150"
                 Button:
                     background_color:  .25, .25, .25, 0.8
                     text: "Defense"
                     on_press: root.selected_ship ==  "ship3.png"
                     on_release: shipImage.source = "ship3.png"
-                    on_release: root.ship_speed = 10
-                    on_release: root.ship_hp = 10
-                    on_release: root.ship_attack = 20
+                    on_release: speedLabel.text = "Speed: 100"
+                    on_release: hpLabel.text = "HP: 150"
+                    on_release: attackLabel.text = "Attack: 100"
                 Button:
                     background_color: 0, 25, 0, 0.5
                     text: "LAUNCH MISSION"
+                    on_release: app.root.current = 'Combat'
 
 
-<CombatScreen>:
+<CombatScreen>
     name: "Combat"
+
+    SpaceGame:
+        id: Game
+
+<PlayerShip>
+    size: 50, 50
+    canvas:
+        Ellipse:
+            source: "ship3.png"
+            pos: self.pos
+            size: self.size
+
+<SpaceGame>
+    player: Player_ship
+
+    # canvas:
+    #     Rectangle:
+    #         pos: self.center_x - 5, 0
+    #         size: 10, self.height
+
     PlayerShip:
-        canvas:
-            Ellipse:
-                source: "ship1.png"
-                pos: self.pos
-                size: 50, 50
+        id: Player_ship
+        center: self.parent.center
 
 <ReturnScreen>:
     BoxLayout:
