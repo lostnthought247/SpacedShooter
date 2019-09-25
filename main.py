@@ -9,14 +9,12 @@ from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.uix.image import Image
 from kivy.clock import Clock
 
-# Initiates application window and features?
-
 
 # Creates a screen obj. used by kivy in kv file
 class IntroScreen(Screen):
     pass
 
-# Creates a screen obj. used by kivy in kv file
+# Creates a screen obj. used by kivy in kv file. Defines some temp display vars
 class BaseScreen(Screen):
     selected_ship = "ship1.png"
     ship_speed = 100
@@ -35,6 +33,7 @@ class ReturnScreen(Screen):
 class ScreenManagement(ScreenManager):
     pass
 
+# Creates the player ship object used by .kv and .py code
 class PlayerShip(Widget):
     Speed = None
     HP = None
@@ -46,20 +45,22 @@ class PlayerShip(Widget):
         self.pos = (newX, newY)
 
 
-# Game Widget
+# Game Widget to update game
 class SpaceGame(Widget):
         def update(self, dt):
             self.player.move_player()
 
-# Game App
+# Game App to build window and set event update timer
 class SpaceGameApp(App):
     def build(self):
         # Loads and builds view based on SpaceGame.kv file
-        presentation = Builder.load_file("SpaceGame.kv")
+        GameView = Builder.load_file("SpaceGame.kv")
+        # Creates instance of game widget
         game = SpaceGame()
         # Sets game update interval
         Clock.schedule_interval(game.update, 1.0 / 60.0)
-        return presentation
+        # Returns visual display is game based on .kv file
+        return GameView
 
 
 if __name__ == "__main__":
