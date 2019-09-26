@@ -1,0 +1,10 @@
+# Spaced Out Dependencies
+#
+# Install these with the command:
+#
+#     python3 -m pip install -r requirements.txt
+#
+
+# Spaced Out is built on Kivy (https://kivy.org/doc/stable/)
+Kivy==1.11.1
+
