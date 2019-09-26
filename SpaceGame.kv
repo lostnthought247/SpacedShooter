@@ -1,13 +1,16 @@
 #:kivy 1.11.1
 
+###############################
+# Screens and Screen Management
+###############################
+
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
 ScreenManagement:
-    trasition: FadeTransition()
+    transition: FadeTransition()
     IntroScreen:
     BaseScreen:
     CombatScreen:
     ReturnScreen:
-
 
 
 <IntroScreen>:
@@ -49,6 +52,7 @@ ScreenManagement:
             BoxLayout:
 
         BoxLayout:
+
 
 <BaseScreen>:
     name : 'Base'
@@ -176,25 +180,6 @@ ScreenManagement:
     SpaceGame:
         id: Game
 
-<PlayerShip>
-    size:  self.size
-    canvas:
-        Ellipse:
-            source: "ship3.png"
-            pos: self.pos
-            size: self.size
-
-<SpaceGame>
-    player: Player_ship
-
-    # canvas:
-    #     Rectangle:
-    #         pos: self.center_x - 5, 0
-    #         size: 10, self.height
-
-    PlayerShip:
-        id: Player_ship
-        pos: self.pos
 
 <ReturnScreen>:
     BoxLayout:
@@ -205,3 +190,28 @@ ScreenManagement:
             on_press:
                 root.manager.transition.direction = 'right'
                 root.manager.current = 'menu'
+
+
+###############################
+# Game Objects
+###############################
+
+<PlayerShip>
+    size:  self.size
+    canvas:
+        Ellipse:
+            source: "ship3.png"
+            pos: self.pos
+            size: self.size
+
+
+###############################
+# The Game
+###############################
+
+<SpaceGame>
+    player: Player_ship
+
+    PlayerShip:
+        id: Player_ship
+        pos: self.pos
