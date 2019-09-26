@@ -165,12 +165,17 @@ ScreenManagement:
 
 <CombatScreen>
     name: "Combat"
-
+    Image:
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+        source: 'space.png'
     SpaceGame:
         id: Game
 
 <PlayerShip>
-    size: 50, 50
+    size:  self.size
     canvas:
         Ellipse:
             source: "ship3.png"
@@ -187,7 +192,7 @@ ScreenManagement:
 
     PlayerShip:
         id: Player_ship
-        center: self.parent.center
+        pos: self.pos
 
 <ReturnScreen>:
     BoxLayout:
