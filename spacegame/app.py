@@ -62,8 +62,8 @@ class BaseScreen(Screen):
 class CombatScreen(Screen):
     """The screen that the user flies around shooting enemies."""
     player = ObjectProperty(None)
-    angle = NumericProperty(25)
-    velocity = NumericProperty(25)
+    angle = NumericProperty(0)
+
     shiptype = StringProperty('fast')
 
     def __init__(self, **kwargs):
@@ -110,39 +110,36 @@ class CombatScreen(Screen):
     def move_hero(self, dt):
         """Move the player ship according to the key pressed."""
         for i in [0, 1]:
-            if self.player.pos[i] < 0:
+            if self.player.pos[i] < -5:
                 self.player.pos[i] = Window.size[i]
-            elif self.player.pos[i] > Window.size[i]:
+            elif self.player.pos[i] > Window.size[i]+10:
                 self.player.pos[i] = 0
 
         Logger.debug(self.player)
         x = self.player.pos[0]
         y = self.player.pos[1]
         a = self.player.angle
+        rotation = 0
         velocity = self.player.velocity
 
-        delta_x = 1
-        delta_y = 1
         angle_delta = 1
 
         if "w" in self.keysPressed:
             # Logger.info('"w" was pressed.')
-            velocity += 0.25
+            if velocity < 13:
+                velocity += 0.25
 
         if "s" in self.keysPressed:
             if velocity > 0:
                 velocity -= 0.25
         if "a" in self.keysPressed:
-            a += angle_delta
+            rotation += angle_delta
         if "d" in self.keysPressed:
             # Logger.info('"d" was pressed.')
-            a -= angle_delta
+            rotation -= angle_delta
 
-        # x = x + (delta_x * velocity)
-        # y = y + (delta_y * velocity)
-        # Logger.info('The new position is ({}, {})'.format(x, y))
 
-        self.player.angle = a
+        self.player.angle = a + rotation
 
         # if velocity > 0 : velocity -= 0.05
         self.player.velocity = velocity
