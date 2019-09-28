@@ -1,11 +1,25 @@
 #:kivy 1.11.1
 
+
+###############################
+# Game Objects
+###############################
+
+<PlayerShip>
+    size: 200, 200
+    canvas:
+        Ellipse:
+            source: root.skin
+            pos: self.pos
+            size: self.size
+
+
 ###############################
 # Screens and Screen Management
 ###############################
 
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
-ScreenManagement:
+ScreenManager:
     transition: FadeTransition()
     IntroScreen:
     BaseScreen:
@@ -15,6 +29,8 @@ ScreenManagement:
 
 <IntroScreen>:
     name : 'Intro'
+
+    # Set the background image for the intro screen.
     Image:
         allow_stretch: True
         keep_ratio: False
@@ -37,15 +53,18 @@ ScreenManagement:
         BoxLayout:
             orientation: 'horizontal'
             BoxLayout:
-            # "New Game" button: initiates "Base" screen
+
+            # Start a new game (goes to "Base" screen).
             Button:
                 text: "New Game"
                 on_release: app.root.current = 'Base'
-            # "Continue" button: initiates "laod" screen
+
+            # Load a game (goes to "Return" screen).
             Button:
                 text: "Continue"
-                on_release: app.root.current = 'Combat'
-            # "Quit/Exit" button: exits program
+                on_release: app.root.current = 'Return'
+
+            # Quit the game (terminates the program).
             Button:
                 text: "Quit"
                 on_release: quit()
@@ -56,6 +75,7 @@ ScreenManagement:
 
 <BaseScreen>:
     name : 'Base'
+
     Image:
         allow_stretch: True
         keep_ratio: False
@@ -75,6 +95,8 @@ ScreenManagement:
                     size: self.texture_size
             BoxLayout:
             BoxLayout:
+
+            # Back to the main menu.
             Button:
                 text: "Main Menu"
                 on_release: app.root.current = 'Intro'
@@ -89,12 +111,12 @@ ScreenManagement:
                         pos: self.pos
                         size: self.size
                 Image:
-                    id: shipImage
+                    # A picture of the selected ship.
                     allow_stretch: True
                     keep_ratio: False
                     pos: self.pos
                     size: self.size
-                    source: root.selected_ship
+                    source: root.skin
             BoxLayout:
                 canvas:
                     Color:
@@ -105,6 +127,7 @@ ScreenManagement:
                 Label:
                     text: """Ship Stats:"""
                 BoxLayout:
+                    # The currently selected ship's stats
                     canvas:
                         Color:
                             rgba: .05,.05,.05,0.5
@@ -112,16 +135,30 @@ ScreenManagement:
                             pos: self.pos
                             size: self.size
                     orientation: 'vertical'
-                    Label:
-                        id: speedLabel
-                        text: str("Speed: " + str(root.ship_speed))
-                    Label:
-                        id: hpLabel
-                        text: str("HP: " + str(root.ship_hp))
-                    Label:
-                        id: attackLabel
-                        text: str("Attack: " + str(root.ship_attack))
-
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Label:
+                            text: 'Speed: '
+                        Label:
+                            text: root.speed
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Label:
+                            text: 'HP: '
+                        Label:
+                            text: root.hp
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Label:
+                            text: 'Attack: '
+                        Label:
+                            text: root.attack
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Label:
+                            text: 'Ammo: '
+                        Label:
+                            text: root.ammo
 
         BoxLayout:
             orientation: 'horizontal'
@@ -139,79 +176,61 @@ ScreenManagement:
                             size: self.size
                             pos: self.pos
 
+                # Ship selection
                 Button:
                     background_color:  .25, .25, .25, 0.8
                     text: "Speed"
-                    on_press: root.selected_ship =  "ship1.png"
-                    on_release: shipImage.source = "ship1.png"
-                    on_release: speedLabel.text = "Speed: 150"
-                    on_release: hpLabel.text = "HP: 100"
-                    on_release: attackLabel.text = "Attack: 100"
+                    shiptype: 'fast'
+                    on_release: root.select_ship(self.shiptype)
+                    on_release: app.shiptype = self.shiptype
                 Button:
                     background_color: .25, .25, .25, 0.8
                     text: "Combat"
-                    on_press: root.selected_ship =  "ship2.png"
-                    on_release: shipImage.source = "ship2.png"
-                    on_release: speedLabel.text = "Speed: 100"
-                    on_release: hpLabel.text = "HP: 100"
-                    on_release: attackLabel.text = "Attack: 150"
+                    shiptype: 'basic'
+                    on_release: root.select_ship(self.shiptype)
+                    on_release: app.shiptype = self.shiptype
                 Button:
                     background_color:  .25, .25, .25, 0.8
                     text: "Defense"
-                    on_press: root.selected_ship ==  "ship3.png"
-                    on_release: shipImage.source = "ship3.png"
-                    on_release: speedLabel.text = "Speed: 100"
-                    on_release: hpLabel.text = "HP: 150"
-                    on_release: attackLabel.text = "Attack: 100"
+                    shiptype: 'tank'
+                    on_release: root.select_ship(self.shiptype)
+                    on_release: app.shiptype = self.shiptype
+
+                # Start the game
                 Button:
                     background_color: 0, 25, 0, 0.5
                     text: "LAUNCH MISSION"
                     on_release: app.root.current = 'Combat'
+                    on_release: app.root.get_screen('Combat').shiptype = app.shiptype
 
 
+#: import Window kivy.core.window.Window
 <CombatScreen>
     name: "Combat"
+    player: player_ship
     Image:
         allow_stretch: True
         keep_ratio: False
         pos: self.pos
         size: self.size
         source: 'space.png'
-    SpaceGame:
-        id: Game
+
+    RelativeLayout:
+        canvas:
+            Rectangle:
+                texture: root.score_label.texture
+                pos: (0, Window.height - 50)
+                size: root.score_label.texture.size
+        PlayerShip:
+            id: player_ship
 
 
 <ReturnScreen>:
+    name: "Return"
     BoxLayout:
         Button:
             text: 'My settings button'
         Button:
             text: 'Back to menu'
             on_press:
-                root.manager.transition.direction = 'right'
-                root.manager.current = 'menu'
-
-
-###############################
-# Game Objects
-###############################
-
-<PlayerShip>
-    size:  self.size
-    canvas:
-        Ellipse:
-            source: "ship3.png"
-            pos: self.pos
-            size: self.size
-
-
-###############################
-# The Game
-###############################
-
-<SpaceGame>
-    player: Player_ship
-
-    PlayerShip:
-        id: Player_ship
-        pos: self.pos
+                root.manager.current = 'Intro'
