@@ -7,6 +7,7 @@ from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 from kivy.uix.label import CoreLabel
 from kivy.uix.screenmanager import Screen
 from random import randint
+from kivy.vector import Vector
 
 from spacegame import PlayerShip
 
@@ -62,6 +63,7 @@ class CombatScreen(Screen):
     """The screen that the user flies around shooting enemies."""
     player = ObjectProperty(None)
     angle = NumericProperty(25)
+    velocity = NumericProperty(25)
     shiptype = StringProperty('fast')
 
     def __init__(self, **kwargs):
@@ -107,29 +109,73 @@ class CombatScreen(Screen):
 
     def move_hero(self, dt):
         """Move the player ship according to the key pressed."""
+        for i in [0, 1]:
+            if self.player.pos[i] < 0:
+                self.player.pos[i] = Window.size[i]
+            elif self.player.pos[i] > Window.size[i]:
+                self.player.pos[i] = 0
+
         Logger.debug(self.player)
         x = self.player.pos[0]
         y = self.player.pos[1]
         a = self.player.angle
+        velocity = self.player.velocity
 
-
-
-        delta = 1
+        delta_x = 1
+        delta_y = 1
         angle_delta = 1
 
         if "w" in self.keysPressed:
             # Logger.info('"w" was pressed.')
-            y += delta
+            velocity += 0.25
+
         if "s" in self.keysPressed:
-            y -= delta
+            if velocity > 0:
+                velocity -= 0.25
         if "a" in self.keysPressed:
             a += angle_delta
         if "d" in self.keysPressed:
             # Logger.info('"d" was pressed.')
             a -= angle_delta
+
+        # x = x + (delta_x * velocity)
+        # y = y + (delta_y * velocity)
         # Logger.info('The new position is ({}, {})'.format(x, y))
-        self.player.pos = (x, y)
+
         self.player.angle = a
+
+        # if velocity > 0 : velocity -= 0.05
+        self.player.velocity = velocity
+        self.player.pos = Vector(self.player.velocity, 0).rotate(self.player.angle) + self.player.pos
+
+
+
+
+    #
+    # def move_hero(self, dt):
+    #     """Move the player ship according to the key pressed."""
+    #     Logger.debug(self.player)
+    #     x = self.player.pos[0]
+    #     y = self.player.pos[1]
+    #     a = self.player.angle
+    #
+    #     current_velocity = 0
+    #     delta = 1 * current_velocity
+    #     angle_delta = 1
+    #
+    #     if "w" in self.keysPressed:
+    #         # Logger.info('"w" was pressed.')
+    #         y += delta
+    #     if "s" in self.keysPressed:
+    #         y -= delta
+    #     if "a" in self.keysPressed:
+    #         a += angle_delta
+    #     if "d" in self.keysPressed:
+    #         # Logger.info('"d" was pressed.')
+    #         a -= angle_delta
+    #     # Logger.info('The new position is ({}, {})'.format(x, y))
+    #     self.player.pos = (x, y)
+    #     self.player.angle = a
 
 
 
