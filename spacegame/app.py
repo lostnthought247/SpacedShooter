@@ -104,7 +104,9 @@ class CombatScreen(Screen):
         x = self.player.pos[0]
         y = self.player.pos[1]
 
+
         delta = 1
+
 
         if "w" in self.keysPressed:
             # Logger.info('"w" was pressed.')
@@ -113,8 +115,7 @@ class CombatScreen(Screen):
             # Logger.info('"s" was pressed.')
             y -= delta
         if "a" in self.keysPressed:
-            # Logger.info('"a" was pressed.')
-            x -= delta
+            pass
         if "d" in self.keysPressed:
             # Logger.info('"d" was pressed.')
             x += delta
@@ -122,8 +123,16 @@ class CombatScreen(Screen):
         self.player.pos = (x, y)
 
 
+
+
+
+
 class ReturnScreen(Screen):
-    """The screen for choosing a saved game to continue."""
+    """The screen displayed upon level completion before return to base."""
+    pass
+
+class SaveLoadMenu(Screen):
+    """The menu for loading or saving game"""
     pass
 
 

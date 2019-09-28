@@ -1,11 +1,17 @@
 #: import Window kivy.core.window.Window
 <PlayerShip>
-    size: 200, 200
+    size: 75, 75
     canvas:
+        Rotate:
+            axis: 0,0,1
+            angle: 60
+            origin: self.center
+
         Ellipse:
             source: root.skin
             pos: self.pos
             size: self.size
+
 
 <CombatScreen>
     name: "Combat"
@@ -25,3 +31,4 @@
                 size: root.score_label.texture.size
         PlayerShip:
             id: player_ship
+            size_hint: None, None
