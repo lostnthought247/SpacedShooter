@@ -3,7 +3,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.logger import Logger
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 from kivy.uix.label import CoreLabel
 from kivy.uix.screenmanager import Screen
 
@@ -56,9 +56,11 @@ class BaseScreen(Screen):
         self.ship = ship
 
 
+
 class CombatScreen(Screen):
     """The screen that the user flies around shooting enemies."""
     player = ObjectProperty(None)
+    angle = NumericProperty(25)
     shiptype = StringProperty('fast')
 
     def __init__(self, **kwargs):
@@ -103,10 +105,11 @@ class CombatScreen(Screen):
         Logger.debug(self.player)
         x = self.player.pos[0]
         y = self.player.pos[1]
+        a = self.player.angle
 
 
         delta = 1
-
+        angle_delta = 1
 
         if "w" in self.keysPressed:
             # Logger.info('"w" was pressed.')
@@ -115,14 +118,13 @@ class CombatScreen(Screen):
             # Logger.info('"s" was pressed.')
             y -= delta
         if "a" in self.keysPressed:
-            pass
+            a += angle_delta
         if "d" in self.keysPressed:
             # Logger.info('"d" was pressed.')
-            x += delta
+            a -= angle_delta
         # Logger.info('The new position is ({}, {})'.format(x, y))
         self.player.pos = (x, y)
-
-
+        self.player.angle = a
 
 
 
@@ -131,8 +133,8 @@ class ReturnScreen(Screen):
     """The screen displayed upon level completion before return to base."""
     pass
 
-class SaveLoadMenu(Screen):
-    """The menu for loading or saving game"""
+class Save_Load_Settings_Menu(Screen):
+    """The menu for saving/loading or altering game settings"""
     pass
 
 

@@ -12,13 +12,18 @@ from kivy.logger import Logger
 from kivy.uix.widget import Widget
 
 from spacegame.data.ships import hostiles, players
-
+from kivy.properties import (
+    ObjectProperty, NumericProperty, BooleanProperty, StringProperty,
+    ListProperty,
+)
 
 class BaseShip(Widget):
     """The base ship sets each stat to 1."""
-    skin = None
+    angle = NumericProperty(0)
+
+    skin = StringProperty(0)
     stats = None
-    type = None
+    type = StringProperty(0)
 
     def __init__(self, shiptype='basic', dataset=None, **kwargs):
         super().__init__(**kwargs)
