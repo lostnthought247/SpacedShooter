@@ -20,6 +20,7 @@ from kivy.properties import (
 class BaseShip(Widget):
     """The base ship sets each stat to 1."""
     angle = NumericProperty(0)
+    velocity = NumericProperty(0)
 
     skin = StringProperty(0)
     stats = None

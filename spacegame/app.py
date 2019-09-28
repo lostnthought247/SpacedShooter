@@ -6,6 +6,7 @@ from kivy.logger import Logger
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty
 from kivy.uix.label import CoreLabel
 from kivy.uix.screenmanager import Screen
+from random import randint
 
 from spacegame import PlayerShip
 
@@ -79,6 +80,10 @@ class CombatScreen(Screen):
         # Set the event interval of every frame
         Clock.schedule_interval(self.move_hero, 1.0/60.0)
 
+    def get_background(self):
+        background = str("space" + str(randint(1,4)) + ".png")
+        return background
+
     def on_enter(self):
         """Initialize the combat."""
         Logger.info('Combat is beginning in shiptype "{}"'.format(self.shiptype))
@@ -108,6 +113,7 @@ class CombatScreen(Screen):
         a = self.player.angle
 
 
+
         delta = 1
         angle_delta = 1
 
@@ -115,7 +121,6 @@ class CombatScreen(Screen):
             # Logger.info('"w" was pressed.')
             y += delta
         if "s" in self.keysPressed:
-            # Logger.info('"s" was pressed.')
             y -= delta
         if "a" in self.keysPressed:
             a += angle_delta
@@ -125,6 +130,7 @@ class CombatScreen(Screen):
         # Logger.info('The new position is ({}, {})'.format(x, y))
         self.player.pos = (x, y)
         self.player.angle = a
+
 
 
 

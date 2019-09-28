@@ -26,7 +26,7 @@
         keep_ratio: False
         pos: self.pos
         size: self.size
-        source: "space3.png"
+        source: root.get_background()
 
     RelativeLayout:
         canvas:
@@ -37,4 +37,3 @@
         PlayerShip:
             id: player_ship
             size_hint: None, None
-            # angle: 0
