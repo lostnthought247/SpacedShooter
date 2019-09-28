@@ -1,0 +1,44 @@
+<IntroScreen>:
+    name : 'Intro'
+
+    # Set the background image for the intro screen.
+    Image:
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+        source: 'space.png'
+
+    BoxLayout:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: "Spaced Out"
+            font_size: 75
+            color: 0,0,1,1
+        BoxLayout:
+            Label:
+                id: result
+                font_size: 40
+                text: ''
+        BoxLayout:
+            orientation: 'horizontal'
+            BoxLayout:
+
+            # Start a new game (goes to "Base" screen).
+            Button:
+                text: "New Game"
+                on_release: app.root.current = 'Base'
+
+            # Load a game (goes to "Return" screen).
+            Button:
+                text: "Continue"
+                on_release: app.root.current = 'Return'
+
+            # Quit the game (terminates the program).
+            Button:
+                text: "Quit"
+                on_release: quit()
+            BoxLayout:
+
+        BoxLayout:

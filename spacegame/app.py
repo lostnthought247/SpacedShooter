@@ -132,5 +132,5 @@ class SpaceGameApp(App):
 
     def build(self):
         """Build the app and return an app object that can be run."""
-        presentation = Builder.load_file("SpaceGame.kv")
+        presentation = Builder.load_file("app.kv")
         return presentation

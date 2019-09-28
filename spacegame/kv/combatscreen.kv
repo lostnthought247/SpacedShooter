@@ -1,0 +1,27 @@
+#: import Window kivy.core.window.Window
+<PlayerShip>
+    size: 200, 200
+    canvas:
+        Ellipse:
+            source: root.skin
+            pos: self.pos
+            size: self.size
+
+<CombatScreen>
+    name: "Combat"
+    player: player_ship
+    Image:
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+        source: 'space.png'
+
+    RelativeLayout:
+        canvas:
+            Rectangle:
+                texture: root.score_label.texture
+                pos: (0, Window.height - 50)
+                size: root.score_label.texture.size
+        PlayerShip:
+            id: player_ship

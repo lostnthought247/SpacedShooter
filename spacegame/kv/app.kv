@@ -1,0 +1,14 @@
+#:kivy 1.11.1
+
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+ScreenManager:
+    transition: FadeTransition()
+    IntroScreen:
+    BaseScreen:
+    CombatScreen:
+    ReturnScreen:
+
+#:include basescreen.kv
+#:include combatscreen.kv
+#:include introscreen.kv
+#:include returnscreen.kv
