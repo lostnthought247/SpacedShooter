@@ -107,23 +107,20 @@
                     text: "Speed"
                     shiptype: 'fast'
                     on_release: root.select_ship(self.shiptype)
-                    on_release: app.shiptype = self.shiptype
                 Button:
                     background_color: .25, .25, .25, 0.8
                     text: "Combat"
                     shiptype: 'basic'
                     on_release: root.select_ship(self.shiptype)
-                    on_release: app.shiptype = self.shiptype
                 Button:
                     background_color:  .25, .25, .25, 0.8
                     text: "Defense"
                     shiptype: 'tank'
                     on_release: root.select_ship(self.shiptype)
-                    on_release: app.shiptype = self.shiptype
 
                 # Start the game
                 Button:
                     background_color: 0, 25, 0, 0.5
                     text: "LAUNCH MISSION"
                     on_release: app.root.current = 'Combat'
-                    on_release: app.root.get_screen('Combat').shiptype = app.shiptype
+                    on_release: app.root.get_screen('Combat').player.load(root.ship.type)

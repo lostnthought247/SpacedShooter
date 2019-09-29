@@ -1,4 +1,4 @@
-"""The ship data that describes each type of ship."""
+"""The ship data that describes each type of hostile ship."""
 
 fast = {
     'skin': 'ship1.png',
@@ -8,7 +8,6 @@ fast = {
         'hp': 3,
         'ammo': 50,
         },
-    'angle': 0,
     }
 
 basic = {
@@ -19,7 +18,6 @@ basic = {
         'hp': 5,
         'ammo': 75,
         },
-    'angle': 0,
     }
 
 tank = {
@@ -30,7 +28,6 @@ tank = {
         'hp': 8,
         'ammo': 100,
         },
-    'angle': 0,
     }
 
 easy = 0.5

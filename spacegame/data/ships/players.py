@@ -1,4 +1,4 @@
-"""The ship data that describes each type of ship."""
+"""The ship data that describes each type of player ship."""
 
 fast = {
     'skin': 'ship1.png',
