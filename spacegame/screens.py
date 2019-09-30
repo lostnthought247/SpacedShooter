@@ -132,22 +132,27 @@ class CombatScreen(Screen):
             self.keysPressed.remove(text)
 
     def accelerate_hero(
-        self, maxspeed=13, minspeed=0, acceleration=0.25, turning=1
+        self, unit, maxspeed=13, minspeed=0, acceleration=0.25, turning=25
     ):
         """Calculate the acceleration changes based on the key pressed."""
         rotation = 0
+        # Make rotation dependent on speed.
+        angle_delta = turning * unit * self.player.stat('speed')
+
         speed = self.player.speed
+        # Make acceleration dependent on speed.
+        speed_delta = acceleration * unit * self.player.stat('speed')
 
         if "w" in self.keysPressed:
             if speed < maxspeed:
-                speed = min(maxspeed, speed + acceleration)
+                speed = min(maxspeed, speed + speed_delta)
         if "s" in self.keysPressed:
             if speed > minspeed:
-                speed = max(minspeed, speed - acceleration)
+                speed = max(minspeed, speed - speed_delta)
         if "a" in self.keysPressed:
-            rotation += turning
+            rotation += angle_delta
         if "d" in self.keysPressed:
-            rotation -= turning
+            rotation -= angle_delta
         if " " in self.keysPressed:
             self.player.fire()
 
@@ -156,7 +161,7 @@ class CombatScreen(Screen):
 
     def update(self, dt):
         """Step the scene forward."""
-        self.accelerate_hero()
+        self.accelerate_hero(dt)
         self.player.move(windowsize=Window.size)
         self.player.lastfired += dt
         for shell in self.player.shells:
