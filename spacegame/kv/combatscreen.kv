@@ -15,6 +15,21 @@
             pos: self.pos
             size: self.size
 
+<PlayerWeapons>
+    size: 75, 75
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: self.angle - 90
+            origin: self.center
+    canvas.after:
+        PopMatrix
+    canvas:
+        Ellipse:
+            source: root.skin
+            pos: self.pos
+            size: self.size
+
 
 <CombatScreen>
     name: "Combat"

@@ -160,24 +160,19 @@ class CombatScreen(Screen):
             rotation += turning
         if "d" in self.keysPressed:
             rotation -= turning
+        if " " in self.keysPressed:
+            self.player.fire()
 
         self.player.angle += rotation
         self.player.speed = speed
 
-    def move_hero(self):
-        """Advance the player ship position according to its velocity."""
-        delta = Vector(self.player.speed, 0).rotate(self.player.angle)
-        self.player.pos = delta + self.player.pos
-        for i in [0, 1]:  # Wrap the screen.
-            if self.player.pos[i] < -5:
-                self.player.pos[i] = Window.size[i]
-            elif self.player.pos[i] > Window.size[i]+10:
-                self.player.pos[i] = 0
-
     def update(self, dt):
         """Step the scene forward."""
         self.accelerate_hero()
-        self.move_hero()
+        self.player.move(windowsize=Window.size)
+        self.player.lastfired += dt
+        for shell in self.player.shells:
+            shell.move()
 
 
 class ReturnScreen(Screen):

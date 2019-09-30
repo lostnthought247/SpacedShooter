@@ -8,6 +8,7 @@ fast = {
         'hp': 3,
         'ammo': 50,
         },
+    'weapons': 'lasers',
     }
 
 basic = {
@@ -18,6 +19,7 @@ basic = {
         'hp': 5,
         'ammo': 75,
         },
+    'weapons': 'lasers',
     }
 
 tank = {
@@ -28,6 +30,7 @@ tank = {
         'hp': 8,
         'ammo': 100,
         },
+    'weapons': 'lasers',
     }
 
 easy = 0.5
