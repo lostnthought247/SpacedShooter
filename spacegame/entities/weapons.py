@@ -3,6 +3,7 @@ from kivy.logger import Logger
 from kivy.properties import NumericProperty, StringProperty
 from kivy.vector import Vector
 from kivy.uix.widget import Widget
+from kivy.core.window import Window
 
 from spacegame.data.weapons import hostiles, players
 
@@ -19,6 +20,7 @@ class BaseWeapons(Widget):
         speed (float): The current speed of the ship in made up units.
 
     """
+    lifetime = NumericProperty(1)
     angle = NumericProperty(0)
     charged = False
     moot = False
@@ -56,6 +58,12 @@ class BaseWeapons(Widget):
 
     def move(self):
         """Update the position of the weaponsfire."""
+        for i in [0, 1]:
+            if self.pos[i] < 0:
+                self.pos[i] = Window.size[i]
+            elif self.pos[i] > Window.size[i]:
+                self.pos[i] = 0
+
         delta = Vector(self.speed, 0).rotate(self.angle)
         self.pos = delta + self.pos
 

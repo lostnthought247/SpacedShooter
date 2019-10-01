@@ -1,7 +1,7 @@
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.logger import Logger
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, ListProperty
 from kivy.uix.label import CoreLabel
 from kivy.uix.screenmanager import Screen
 from random import randint
