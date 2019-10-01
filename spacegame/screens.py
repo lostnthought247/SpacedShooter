@@ -7,6 +7,7 @@ from kivy.uix.screenmanager import Screen
 from random import randint
 
 from spacegame.entities.ships import PlayerShip
+from spacegame.config import physics
 
 
 class IntroScreen(Screen):
@@ -123,29 +124,35 @@ class CombatScreen(Screen):
 
     def on_key_down(self, keyboard, keycode, text, modifiers):
         """Act on a key being pressed down."""
-        self.keysPressed.add(text)
+        Logger.debug('KeyDown Event: Keycode[1] is "{}"'.format(keycode[1]))
+        self.keysPressed.add(keycode[1])
 
     def on_key_up(self, keyboard, keycode):
         """Act on a key being released up."""
-        text = keycode[1]
-        if text in self.keysPressed:
-            self.keysPressed.remove(text)
+        Logger.debug('KeyUp Event: Keycode[1] is "{}"'.format(keycode[1]))
+        self.keysPressed.remove(keycode[1])
 
     def accelerate_hero(
-        self, unit, maxspeed=13, minspeed=0, acceleration=0.25, turning=25
+        self, unit, physics=physics
     ):
         """Calculate the acceleration changes based on the key pressed."""
+        minspeed = 0
         rotation = 0
-        # Make rotation dependent on speed.
-        angle_delta = turning * unit * self.player.stat('speed')
-
         speed = self.player.speed
+        topspeed = self.player.stat('speed')
+
+        # Acceleration and turning are configs that modify movement overall.
+        acceleration = physics.get('acceleration', 0.25)
+        turning = physics.get('turning', 25)
+
+        # Make rotation dependent on speed.
+        angle_delta = turning * unit * topspeed
         # Make acceleration dependent on speed.
-        speed_delta = acceleration * unit * self.player.stat('speed')
+        speed_delta = acceleration * unit * topspeed
 
         if "w" in self.keysPressed:
-            if speed < maxspeed:
-                speed = min(maxspeed, speed + speed_delta)
+            if speed < topspeed:
+                speed = min(topspeed, speed + speed_delta)
         if "s" in self.keysPressed:
             if speed > minspeed:
                 speed = max(minspeed, speed - speed_delta)
@@ -153,7 +160,7 @@ class CombatScreen(Screen):
             rotation += angle_delta
         if "d" in self.keysPressed:
             rotation -= angle_delta
-        if " " in self.keysPressed:
+        if "spacebar" in self.keysPressed:
             self.player.fire()
 
         self.player.angle += rotation
@@ -161,11 +168,11 @@ class CombatScreen(Screen):
 
     def update(self, dt):
         """Step the scene forward."""
+        self.player.lastfired += dt
         self.accelerate_hero(dt)
         self.player.move(windowsize=Window.size)
-        self.player.lastfired += dt
         for shell in self.player.shells:
-            shell.move()
+            shell.move(windowsize=Window.size)
 
 
 class ReturnScreen(Screen):

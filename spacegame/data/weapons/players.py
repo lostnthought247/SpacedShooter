@@ -3,7 +3,7 @@
 lasers = {
     'skin': 'laser.png',
     'stats': {
-        'recharge': 1,
+        'recharge': 0.5,
         'speed': 20,
         },
     }

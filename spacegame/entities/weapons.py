@@ -3,7 +3,6 @@ from kivy.logger import Logger
 from kivy.properties import NumericProperty, StringProperty
 from kivy.vector import Vector
 from kivy.uix.widget import Widget
-from kivy.core.window import Window
 
 from spacegame.data.weapons import hostiles, players
 
@@ -20,10 +19,10 @@ class BaseWeapons(Widget):
         speed (float): The current speed of the ship in made up units.
 
     """
-    lifetime = NumericProperty(1)
     angle = NumericProperty(0)
     charged = False
     moot = False
+    offscreen = False
     skin = StringProperty()
     speed = NumericProperty(0)
     stats = None
@@ -51,21 +50,18 @@ class BaseWeapons(Widget):
         self.type = type
         self.skin = data['skin']
         self.stats = data['stats']
-        self.charged = True
 
         Logger.debug('Entities: Weapon Skin: {}.'.format(data['skin']))
         Logger.debug('Entities: Weapon Speed: {}.'.format(data['skin']))
 
-    def move(self):
-        """Update the position of the weaponsfire."""
-        for i in [0, 1]:
-            if self.pos[i] < 0:
-                self.pos[i] = Window.size[i]
-            elif self.pos[i] > Window.size[i]:
-                self.pos[i] = 0
-
+    def move(self, windowsize=(None, None)):
+        """Advance the weapon's fire according to its velocity."""
         delta = Vector(self.speed, 0).rotate(self.angle)
         self.pos = delta + self.pos
+        for i in [0, 1]:  # Mark offscreen projectiles for deletion.
+            if self.pos[i] < -5 or self.pos[i] > windowsize[i]+10:
+                self.offscreen = True
+                break
 
 
 class HostileWeapons(BaseWeapons):

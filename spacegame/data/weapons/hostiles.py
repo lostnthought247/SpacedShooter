@@ -1,9 +1,9 @@
 """The weapons data that describes each type of hostile weapon."""
 
 lasers = {
-    'skin': 'ship1.png',
+    'skin': 'laser.png',
     'stats': {
-        'recharge': 1,
+        'recharge': 0.5,
         'speed': 20,
         },
     }

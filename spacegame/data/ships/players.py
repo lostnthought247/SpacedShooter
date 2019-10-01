@@ -26,7 +26,7 @@ tank = {
     'skin': 'ship3.png',
     'stats': {
         'attack': 5,
-        'speed': 1,
+        'speed': 3,
         'hp': 8,
         'ammo': 100,
         },

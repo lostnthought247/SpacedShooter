@@ -156,28 +156,20 @@ class PlayerShip(BaseShip):
         """Fire the ship's weapons."""
         Logger.debug('Entities: Firing weapons.')
         shell = PlayerWeapons(weapontype=self.weaponstype)
-        self.lastfired = 0.0
 
-        # Position the shell in front of the ship.
-        shell.angle = self.angle
-        shell.speed = shell.stats['speed']
-        shell.pos = self.pos
-        shell.move()
-
-        # Add the shell to the list of fired weapons to track.
-        self.shells.append(shell)
-        self.parent.add_widget(shell)
-
+        Logger.debug('Entities: Last Fired: {}'.format(self.lastfired))
         if self.lastfired >= shell.stats['recharge']:
             self.lastfired = 0.0
 
             # Position the shell in front of the ship.
             shell.angle = self.angle
             shell.speed = shell.stats['speed']
-            shell.pos = self.pos
-            shell.move()
+            shell.pos = (0, 0)
 
             # Add the shell to the list of fired weapons to track.
             self.shells.append(shell)
+            self.add_widget(shell)
+
+            Logger.debug('Entities: Bombs away!')
         else:
-            Logger.info('Entities: Weapons are not charged.')
+            Logger.debug('Entities: Weapons are not charged.')
