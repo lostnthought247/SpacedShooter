@@ -168,7 +168,7 @@ class PlayerShip(BaseShip):
 
             # Add the shell to the list of fired weapons to track.
             self.shells.append(shell)
-            self.add_widget(shell)
+            self.parent.add_widget(shell)
 
             Logger.debug('Entities: Bombs away!')
         else:

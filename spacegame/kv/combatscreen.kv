@@ -16,19 +16,19 @@
             size: self.size
 
 <PlayerWeapons>
-    size: 75, 75
-    canvas.before:
-        PushMatrix
-        Rotate:
-            angle: self.angle - 90
-            origin: self.center
-    canvas.after:
-        PopMatrix
+    size: 78, 27
     canvas:
         Ellipse:
             source: root.skin
             pos: self.pos
-            size: 50, 50
+            size: self.size
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: self.angle
+            origin: self.center
+    canvas.after:
+        PopMatrix
 
 
 <CombatScreen>
@@ -41,7 +41,7 @@
         size: self.size
         source: root.get_background()
 
-    RelativeLayout:
+    ScatterLayout:
         canvas:
             Rectangle:
                 texture: root.score_label.texture
