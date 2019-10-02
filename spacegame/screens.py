@@ -7,6 +7,7 @@ from kivy.uix.screenmanager import Screen
 from random import randint
 
 from spacegame.entities.ships import PlayerShip
+from spacegame.entities.ships import HostileShip
 from spacegame.config import physics
 
 
@@ -79,6 +80,7 @@ class CombatScreen(Screen):
     """The screen that the user flies around shooting enemies."""
 
     player = ObjectProperty(None)
+    hostile = ObjectProperty(None)
     shiptype = StringProperty(None)
     updater = None
 

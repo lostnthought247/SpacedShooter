@@ -1,7 +1,7 @@
 """The ship data that describes each type of hostile ship."""
 
 fast = {
-    'skin': 'ship1.png',
+    'skin': 'hostile1.png',
     'stats': {
         'attack': 1,
         'speed': 9,
@@ -12,7 +12,7 @@ fast = {
     }
 
 basic = {
-    'skin': 'ship2.png',
+    'skin': 'hostile2.png',
     'stats': {
         'attack': 5,
         'speed': 5,
@@ -23,7 +23,7 @@ basic = {
     }
 
 tank = {
-    'skin': 'ship3.png',
+    'skin': 'hostile3.png',
     'stats': {
         'attack': 7,
         'speed': 1,

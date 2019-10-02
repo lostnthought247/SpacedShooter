@@ -15,8 +15,24 @@
             pos: self.pos
             size: self.size
 
+<HostileShip>
+    size: 75, 75
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: self.angle - 90
+            origin: self.center
+    canvas.after:
+        PopMatrix
+    canvas:
+        Ellipse:
+            source: root.temp_get_hostile()
+            pos: self.pos
+            size: self.size
+
 <PlayerWeapons>
     size: 78, 27
+    size_hint: None, None
     canvas:
         Ellipse:
             source: root.skin
@@ -34,6 +50,7 @@
 <CombatScreen>
     name: "Combat"
     player: player_ship
+    hostile: hostile_ship
     Image:
         allow_stretch: True
         keep_ratio: False
@@ -50,3 +67,8 @@
         PlayerShip:
             id: player_ship
             size_hint: None, None
+
+        HostileShip:
+            id: hostile_ship
+            size_hint: None, None
+            pos: 400, 400

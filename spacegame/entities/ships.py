@@ -15,7 +15,7 @@ from kivy.uix.widget import Widget
 
 from spacegame.data.ships import hostiles, players
 from spacegame.entities.weapons import PlayerWeapons
-
+from random import randint
 
 class BaseShip(Widget):
     """The base ship loads common properties from a dataset in data/ships.
@@ -145,6 +145,11 @@ class HostileShip(BaseShip):
         modifier = self.modifier if modified else 1
         return modifier * super().stat(key)
 
+    def temp_get_hostile(self):
+            num = str(randint(1,6))
+            hostile = "hostile" + num + ".png"
+            return hostile
+
 
 class PlayerShip(BaseShip):
     """Player ships default to a specific dataset and have access to boosts."""
@@ -164,7 +169,7 @@ class PlayerShip(BaseShip):
             # Position the shell in front of the ship.
             shell.angle = self.angle
             shell.speed = shell.stats['speed']
-            shell.pos = (0, 0)
+            shell.pos = self.pos
 
             # Add the shell to the list of fired weapons to track.
             self.shells.append(shell)
