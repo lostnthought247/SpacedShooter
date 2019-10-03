@@ -1,13 +1,11 @@
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.logger import Logger
-from kivy.properties import ObjectProperty, StringProperty, ListProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.label import CoreLabel
 from kivy.uix.screenmanager import Screen
-from random import randint
 
 from spacegame.entities.ships import PlayerShip
-from spacegame.entities.ships import HostileShip
 from spacegame.config import physics
 
 
@@ -114,10 +112,6 @@ class CombatScreen(Screen):
         """Perform clean up right before the scene is switched from."""
         self.updater.cancel()  # Clear the event interval.
 
-    def get_background(self):
-        """Choose a random image for the scene's background."""
-        return 'space{}.png'.format(randint(1, 4))
-
     def on_keyboard_closed(self):
         """Act on the keyboard closing."""
         self.keyboard.unbind(on_key_down=self.on_key_down)
@@ -188,3 +182,15 @@ class ReturnScreen(Screen):
     def on_pre_enter(self):
         """Perform tasks to ready the scene right before it is switched to."""
         Logger.info('Application: Changed to the Return screen.')
+
+
+class SettingsScreen(Screen):
+    """The screen for changing game settings.
+
+    Back To Menu - Go back to the intro screen.
+
+    """
+
+    def on_pre_enter(self):
+        """Perform tasks to ready the scene right before it is switched to."""
+        Logger.info('Application: Changed to the Settings screen.')

@@ -1,14 +1,21 @@
 #:kivy 1.11.1
 
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
+#: import choose random.choice
+
+#: import screenconfig spacegame.config.screens
+
+
 ScreenManager:
     transition: FadeTransition()
     IntroScreen:
     BaseScreen:
     CombatScreen:
     ReturnScreen:
+    SettingsScreen:
 
 #:include basescreen.kv
 #:include combatscreen.kv
 #:include introscreen.kv
 #:include returnscreen.kv
+#:include settingsscreen.kv

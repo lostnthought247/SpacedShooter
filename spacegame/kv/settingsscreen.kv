@@ -1,0 +1,48 @@
+<SettingsScreen>:
+    name: "Settings"
+
+    # Set the background image for the settings screen.
+    Image:
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+        source: screenconfig[root.name]['bg'][0]
+
+    BoxLayout:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: "Spaced Out"
+            font_size: 75
+            color: 0, 0, 1, 1
+        BoxLayout:
+        Label:
+            font_size: 20
+            text: 'Difficulty:'
+        Button:
+            background_normal: ''
+            background_color: screenconfig[root.name]['selected_bg'] if app.difficulty == 'easy' else screenconfig[root.name]['unselected_bg']
+            color: screenconfig[root.name]['selected_color'] if app.difficulty == 'easy' else screenconfig[root.name]['unselected_color']
+            text: 'Easy'
+            on_release: root.manager.current = 'Intro'
+            on_release: app.set_difficulty(difficulty='easy')
+        Button:
+            background_normal: ''
+            background_color: screenconfig[root.name]['selected_bg'] if app.difficulty == 'medium' else screenconfig[root.name]['unselected_bg']
+            color: screenconfig[root.name]['selected_color'] if app.difficulty == 'medium' else screenconfig[root.name]['unselected_color']
+            text: 'Medium'
+            on_release: root.manager.current = 'Intro'
+            on_release: app.set_difficulty(difficulty='medium')
+        Button:
+            background_normal: ''
+            background_color: screenconfig[root.name]['selected_bg'] if app.difficulty == 'hard' else screenconfig[root.name]['unselected_bg']
+            color: screenconfig[root.name]['selected_color'] if app.difficulty == 'hard' else screenconfig[root.name]['unselected_color']
+            text: 'Hard'
+            on_release: root.manager.current = 'Intro'
+            on_release: app.set_difficulty(difficulty='hard')
+        BoxLayout:
+            orientation: 'horizontal'
+            BoxLayout:
+            BoxLayout:
+        BoxLayout:

@@ -1,12 +1,12 @@
 <BaseScreen>:
-    name : 'Base'
+    name: 'Base'
 
     Image:
         allow_stretch: True
         keep_ratio: False
         pos: self.pos
         size: self.size
-        source: 'dock.png'
+        source: screenconfig[root.name]['bg'][0]
 
     BoxLayout:
         orientation: 'horizontal'
@@ -24,14 +24,14 @@
             # Back to the main menu.
             Button:
                 text: "Main Menu"
-                on_release: app.root.current = 'Intro'
+                on_release: root.manager.current = 'Intro'
         BoxLayout:
             orientation: 'vertical'
             BoxLayout:
             BoxLayout:
                 canvas:
                     Color:
-                        rgba: 0.01,0.01,0.01,0.80
+                        rgba: 0.01, 0.01, 0.01, 0.80
                     Rectangle:
                         pos: self.pos
                         size: self.size
@@ -45,7 +45,7 @@
             BoxLayout:
                 canvas:
                     Color:
-                        rgba: 0,0,0,0.9
+                        rgba: 0, 0, 0, 0.9
                     Rectangle:
                         pos: self.pos
                         size: self.size
@@ -55,7 +55,7 @@
                     # The currently selected ship's stats
                     canvas:
                         Color:
-                            rgba: .05,.05,.05,0.5
+                            rgba: .05, .05, .05, 0.5
                         Rectangle:
                             pos: self.pos
                             size: self.size
@@ -122,5 +122,5 @@
                 Button:
                     background_color: 0, 25, 0, 0.5
                     text: "LAUNCH MISSION"
-                    on_release: app.root.current = 'Combat'
-                    on_release: app.root.get_screen('Combat').player.load(root.ship.type)
+                    on_release: root.manager.current = 'Combat'
+                    on_release: root.manager.get_screen('Combat').player.load(root.ship.type)

@@ -7,7 +7,7 @@
         keep_ratio: False
         pos: self.pos
         size: self.size
-        source: 'space.png'
+        source: screenconfig[root.name]['bg'][0]
 
     BoxLayout:
     BoxLayout:
@@ -28,12 +28,17 @@
             # Start a new game (goes to "Base" screen).
             Button:
                 text: "New Game"
-                on_release: app.root.current = 'Base'
+                on_release: root.manager.current = 'Base'
 
             # Load a game (goes to "Return" screen).
             Button:
                 text: "Continue"
-                on_release: app.root.current = 'Return'
+                on_release: root.manager.current = 'Return'
+
+            # Settings (goes to "Settings" screen).
+            Button:
+                text: "Settings"
+                on_release: root.manager.current = 'Settings'
 
             # Quit the game (terminates the program).
             Button:

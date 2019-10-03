@@ -56,7 +56,7 @@
         keep_ratio: False
         pos: self.pos
         size: self.size
-        source: root.get_background()
+        source: choose(screenconfig[root.name]['bg'])
 
     FloatLayout:
         canvas:

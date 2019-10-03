@@ -1,9 +1,35 @@
 <ReturnScreen>:
     name: "Return"
+
+    # Set the background image for the return screen.
+    Image:
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+        source: screenconfig[root.name]['bg'][0]
+
     BoxLayout:
-        Button:
-            text: 'Settings'
-        Button:
-            text: 'Back to menu'
-            on_press:
-                root.manager.current = 'Intro'
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: "Spaced Out"
+            font_size: 75
+            color: 0,0,1,1
+        BoxLayout:
+        Label:
+            text: "No saved games"
+            font_size: 40
+            # color: 255,255,255,1
+        BoxLayout:
+            orientation: 'horizontal'
+            BoxLayout:
+
+            # Back to the main game menu.
+            Button:
+                text: 'Back to menu'
+                on_release: root.manager.current = 'Intro'
+
+            BoxLayout:
+
+        BoxLayout:
