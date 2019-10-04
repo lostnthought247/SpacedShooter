@@ -12,7 +12,7 @@ class BaseWeapons(Widget):
 
     Attributes:
         angle (int): The rotation angle of the ship in degrees.
-        moot (bool): True if the shell is no longer relevant. False otherwise.
+        offscreen (bool): True if the shell is not visible. False otherwise.
         dataset (obj): The data module the weapon belongs to.
         skin (str): The weapon's image without the path (images go in
             assets/images).
@@ -21,7 +21,6 @@ class BaseWeapons(Widget):
     """
     angle = NumericProperty(0)
     charged = False
-    moot = False
     offscreen = False
     skin = StringProperty()
     speed = NumericProperty(0)
@@ -42,15 +41,13 @@ class BaseWeapons(Widget):
         """
         Logger.debug('Entities: Loading "{}" weapon type.'.format(type))
         data = getattr(self.dataset, type)
-        if data is None:
-            raise KeyError(
-                '"{}" is not a weapon type in `dataset`.'.format(type)
-                )
 
         self.type = type
+        self.sfx = data['sfx']
         self.skin = data['skin']
         self.stats = data['stats']
 
+        Logger.debug('Entities: Weapon SFX: {}.'.format(data['sfx']))
         Logger.debug('Entities: Weapon Skin: {}.'.format(data['skin']))
         Logger.debug('Entities: Weapon Speed: {}.'.format(data['skin']))
 
@@ -59,8 +56,9 @@ class BaseWeapons(Widget):
         delta = Vector(self.speed, 0).rotate(self.angle)
         self.pos = delta + self.pos
         for i in [0, 1]:  # Mark offscreen projectiles for deletion.
-            if self.pos[i] < -5 or self.pos[i] > windowsize[i]+10:
+            if self.pos[i] < -5 or self.pos[i] > windowsize[i]:
                 self.offscreen = True
+                self.pos = (-10000, -10000)
                 break
 
 

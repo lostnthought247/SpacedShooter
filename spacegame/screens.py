@@ -164,11 +164,23 @@ class CombatScreen(Screen):
 
     def update(self, dt):
         """Step the scene forward."""
+        # First, step time forward.
         self.player.lastfired += dt
         self.accelerate_hero(dt)
+
+        # Next, move the objects around the screen
         self.player.move(windowsize=Window.size)
         for shell in self.player.shells:
             shell.move(windowsize=Window.size)
+            if shell.offscreen:
+                self.player.shells.remove(shell)
+                self.remove_widget(shell)
+
+        # Finally, check for any collisions
+        self.detect_collisions()
+
+    def detect_collisions(self):
+        pass
 
 
 class ReturnScreen(Screen):

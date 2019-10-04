@@ -8,14 +8,17 @@ Ships have the following stats:
     Ammo - The ships capacity to carry ammunition.
 
 """
+from kivy.core.audio import SoundLoader
 from kivy.logger import Logger
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.vector import Vector
 from kivy.uix.widget import Widget
+from os.path import basename
+from random import randint
 
 from spacegame.data.ships import hostiles, players
 from spacegame.entities.weapons import PlayerWeapons
-from random import randint
+
 
 class BaseShip(Widget):
     """The base ship loads common properties from a dataset in data/ships.
@@ -44,7 +47,8 @@ class BaseShip(Widget):
     speed = NumericProperty(0)
     stats = None
     type = StringProperty()
-    weaponstype = StringProperty()
+    weapontype = StringProperty()
+    weaponsound = None
 
     def __init__(self, shiptype='basic', dataset=None, **kwargs):
         super().__init__(**kwargs)
@@ -60,15 +64,11 @@ class BaseShip(Widget):
         """
         Logger.debug('Entities: Loading "{}" ship type.'.format(type))
         data = getattr(self.dataset, type)
-        if data is None:
-            raise KeyError(
-                '"{}" is not a ship type in `dataset`.'.format(type)
-                )
 
         self.type = type
         self.skin = data['skin']
         self.stats = data['stats']
-        self.weaponstype = data['weapons']
+        self.weapontype = data['weapons']
 
         Logger.debug('Entities: Ship Skin: {}.'.format(data['skin']))
         Logger.debug('Entities: Ship Stats: {}.'.format(data['stats']))
@@ -146,7 +146,7 @@ class HostileShip(BaseShip):
         return modifier * super().stat(key)
 
     def temp_get_hostile(self):
-            num = str(randint(1,6))
+            num = str(randint(1, 6))
             hostile = "hostile" + num + ".png"
             return hostile
 
@@ -160,7 +160,11 @@ class PlayerShip(BaseShip):
     def fire(self):
         """Fire the ship's weapons."""
         Logger.debug('Entities: Firing weapons.')
-        shell = PlayerWeapons(weapontype=self.weaponstype)
+        shell = PlayerWeapons(weapontype=self.weapontype)
+
+        # Load the weapon's sound effects if they have changed.
+        if shell.sfx != basename(getattr(self.weaponsound, 'source', '')):
+            self.weaponsound = SoundLoader.load(shell.sfx)
 
         Logger.debug('Entities: Last Fired: {}'.format(self.lastfired))
         if self.lastfired >= shell.stats['recharge']:
@@ -174,6 +178,7 @@ class PlayerShip(BaseShip):
             # Add the shell to the list of fired weapons to track.
             self.shells.append(shell)
             self.parent.add_widget(shell)
+            self.weaponsound.play()
 
             Logger.debug('Entities: Bombs away!')
         else:

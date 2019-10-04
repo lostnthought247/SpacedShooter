@@ -15,6 +15,7 @@ physics = {
 paths = {
     'images': path.join('assets', 'images'),
     'kv': path.join('spacegame', 'kv'),
+    'sounds': path.join('assets', 'sounds')
     }
 
 screens = {
@@ -57,3 +58,6 @@ resource_add_path(paths['images'])
 
 Logger.info('Config: Adding resource path "{}"'.format(paths['kv']))
 resource_add_path(paths['kv'])
+
+Logger.info('Config: Adding resource path "{}"'.format(paths['sounds']))
+resource_add_path(paths['sounds'])
