@@ -8,16 +8,15 @@ Ships have the following stats:
     Ammo - The ships capacity to carry ammunition.
 
 """
-from kivy.core.audio import SoundLoader
 from kivy.logger import Logger
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.vector import Vector
 from kivy.uix.widget import Widget
-from os.path import basename
 from random import randint
 
 from spacegame.data.ships import hostiles, players
 from spacegame.entities.weapons import PlayerWeapons
+from spacegame.managers import SoundManager
 
 
 class BaseShip(Widget):
@@ -162,9 +161,15 @@ class PlayerShip(BaseShip):
         Logger.debug('Entities: Firing weapons.')
         shell = PlayerWeapons(weapontype=self.weapontype)
 
-        # Load the weapon's sound effects if they have changed.
-        if shell.sfx != basename(getattr(self.weaponsound, 'source', '')):
-            self.weaponsound = SoundLoader.load(shell.sfx)
+        if shell.sfx != self.weaponsound:  # The sound effect has changed.
+            # Remove the old sound effect.
+            if self.weaponsound is not None:
+                sfx = SoundManager.sfx.get(self.weaponsound)
+                SoundManager.remove_sfx(sfx, self)
+
+            # Add the new sound effect.
+            self.weaponsound = shell.sfx
+            SoundManager.add_sfx(shell.sfx, self)
 
         Logger.debug('Entities: Last Fired: {}'.format(self.lastfired))
         if self.lastfired >= shell.stats['recharge']:
@@ -178,7 +183,7 @@ class PlayerShip(BaseShip):
             # Add the shell to the list of fired weapons to track.
             self.shells.append(shell)
             self.parent.add_widget(shell)
-            self.weaponsound.play()
+            SoundManager.play_sfx(shell.sfx)
 
             Logger.debug('Entities: Bombs away!')
         else:
