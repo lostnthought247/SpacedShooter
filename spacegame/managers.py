@@ -34,7 +34,7 @@ class SoundManager:
     music = {}
     volumes = {
         'sfx': 1.0,
-        'music': 1.0,
+        'music': 0.25,
         'master': 1.0,
         }
 
@@ -125,6 +125,7 @@ class SoundManager:
             cls.music[fn] = resource
         resource.subscribers[subscriber] = subscriber
 
+    @classmethod
     def remove_music(cls, source, subscriber):
         """Remove one of the music tracks or its subscriber.
 
@@ -141,15 +142,16 @@ class SoundManager:
             resource.track.unload()
 
     @classmethod
-    def play_music(cls, source):
+    def play_music(cls, source, loop=True):
         """Play one of the music tracks.
 
         Args:
             source (str): The filename or path to play.
 
         """
-        track = cls.music[basename(source)]
-        track.play()
+        resource = cls.music[basename(source)]
+        resource.track.loop = loop
+        resource.track.play()
 
     @classmethod
     def update_music(cls):

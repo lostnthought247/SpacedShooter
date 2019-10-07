@@ -124,3 +124,4 @@
                     text: "LAUNCH MISSION"
                     on_release: root.manager.current = 'Combat'
                     on_release: root.manager.get_screen('Combat').player.load(root.ship.type)
+                    on_release: root.manager.get_screen('Intro').stop_soundtrack()

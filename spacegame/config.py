@@ -18,6 +18,7 @@ paths = {
     'sounds': path.join('assets', 'sounds')
     }
 
+
 screens = {
     'Base': {
         'bg': [
@@ -31,10 +32,18 @@ screens = {
             'space3.png',
             'space4.png',
             ],
+        'music': [
+            'level01-30.ogg',
+            'level02-30.ogg',
+            'level03-30.ogg',
+            ],
     },
     'Intro': {
         'bg': [
             'space.png',
+            ],
+        'music': [
+            'first-clazz-30.ogg',
             ],
     },
     'Return': {

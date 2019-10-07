@@ -4,9 +4,12 @@ from kivy.logger import Logger
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.label import CoreLabel
 from kivy.uix.screenmanager import Screen
+from random import choice
 
 from spacegame.entities.ships import PlayerShip
 from spacegame.config import physics
+from spacegame.config import screens
+from spacegame.managers import SoundManager
 
 
 class IntroScreen(Screen):
@@ -17,10 +20,31 @@ class IntroScreen(Screen):
     Quit - Exit the application.
 
     """
+    source = None
 
     def on_pre_enter(self):
         """Perform tasks to ready the scene right before it is switched to."""
         Logger.info('Application: Changed to the Intro screen.')
+        self.start_soundtrack()
+
+    def on_pre_leave(self):
+        """Clean up the scene."""
+        Logger.info('Application: Leaving the Intro screen.')
+
+    def start_soundtrack(self):
+        """Choose and play music for the intro scene."""
+        sources = screens['Intro']['music']
+        self.source = choice(sources)
+        Logger.info('Chose "{}" as the intro music.'.format(self.source))
+        try:
+            SoundManager.music[self.source]
+        except KeyError:
+            SoundManager.add_music(self.source, self)
+            SoundManager.play_music(self.source)
+
+    def stop_soundtrack(self):
+        """Stop the intro scene music."""
+        SoundManager.remove_music(self.source, self)
 
 
 class BaseScreen(Screen):
@@ -39,6 +63,7 @@ class BaseScreen(Screen):
     ammo = StringProperty()
     skin = StringProperty()
     ship = None
+    source = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -52,6 +77,10 @@ class BaseScreen(Screen):
             'The ship displayed in the base is the '
             '"{}" type.'.format(self.ship.type)
             )
+
+    def on_pre_leave(self):
+        """Clean up the scene."""
+        Logger.info('Application: Leaving the Intro screen.')
 
     def select_ship(self, type):
         """Change the stats of the ship on the base page.
@@ -104,13 +133,16 @@ class CombatScreen(Screen):
             '"{}" type.'.format(self.player.type)
             )
         Logger.info('Application: Stats: {}.'.format(self.player.stats))
+        self.start_soundtrack()
 
         # Set the event interval of every frame
         self.updater = Clock.schedule_interval(self.update, 1.0/60.0)
 
     def on_pre_leave(self):
         """Perform clean up right before the scene is switched from."""
+        Logger.info('Application: Leaving the Combat screen.')
         self.updater.cancel()  # Clear the event interval.
+        self.stop_soundtrack()
 
     def on_keyboard_closed(self):
         """Act on the keyboard closing."""
@@ -181,6 +213,21 @@ class CombatScreen(Screen):
 
     def detect_collisions(self):
         pass
+
+    def start_soundtrack(self):
+        """Choose and play music for the combat scene."""
+        sources = screens['Combat']['music']
+        self.source = choice(sources)
+        Logger.info('Chose "{}" as the combat music.'.format(self.source))
+        try:
+            SoundManager.music[self.source]
+        except KeyError:
+            SoundManager.add_music(self.source, self)
+            SoundManager.play_music(self.source)
+
+    def stop_soundtrack(self):
+        """Stop the combat scene music."""
+        SoundManager.remove_music(self.source, self)
 
 
 class ReturnScreen(Screen):
