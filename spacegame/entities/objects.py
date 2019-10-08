@@ -21,19 +21,9 @@ class BaseObject(Widget):
     """The base object loads common properties from a dataset in data/ships.
 
     Args:
-        shiptype (str): The type of ship to instantiate.
-        dataset (obj): The module containing the ship data.
-
+        ...
     Attributes:
-        angle (int): The rotation angle of the ship in degrees.
-        dataset (obj): The data module the ship belongs to.
-        lastfired (float): The time since weapons were fired last.
-        skin (str): The ship's image without the path (images go in
-            assets/images).
-        speed (float): The current speed of the ship in made up units.
-        stats (dict): The ships stats. Stats come from spacegame.data.ships.
-        type (str): The key that ship data was loaded from.
-        weaponstype (str): The key that weapons data was loaded from.
+        ...
 
     """
 

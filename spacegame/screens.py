@@ -1,7 +1,7 @@
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.logger import Logger
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty
 from kivy.uix.label import CoreLabel
 from kivy.uix.screenmanager import Screen
 from random import choice
@@ -110,6 +110,14 @@ class CombatScreen(Screen):
     hostile = ObjectProperty(None)
     shiptype = StringProperty(None)
     updater = None
+    lives = NumericProperty(None)
+
+
+    # In progress 10/7 - sets kv list prop. for ships, objects, and explosions
+    spaceships = ListProperty()
+    asteroids = ListProperty()
+    explosions = ListProperty()
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -211,8 +219,21 @@ class CombatScreen(Screen):
         # Finally, check for any collisions
         self.detect_collisions()
 
+
+
     def detect_collisions(self):
-        pass
+        if self.player.collide_widget(self.hostile):
+            Logger.info("Ship 2 Ship Collision Detected!")
+            self.parent.hostile.pos = (-10000, -10000)
+            self.remove_widget(self.hostile)
+            self.player.pos = (-10000, -10000)
+            self.parent.remove_widget(self.player)
+        # for shell in self.player.shell:
+        #     Logger.info("Ship 2 Shot Collision Detected!")
+        #     self.hostile.pos = (-10000, -10000)
+        #     self.player.shells.pos = (-10000, -10000)
+
+
 
     def start_soundtrack(self):
         """Choose and play music for the combat scene."""
