@@ -1,7 +1,7 @@
 #: import Window kivy.core.window.Window
 
 <PlayerShip>
-    size: 75, 75
+    size: 50, 50
     canvas.before:
         PushMatrix
         Rotate:
@@ -13,10 +13,10 @@
         Ellipse:
             source: root.skin
             pos: self.pos
-            size: self.size
+            # size: self.size
 
 <HostileShip>
-    size: 75, 75
+    size: 50, 50
     canvas.before:
         PushMatrix
         Rotate:
@@ -28,7 +28,7 @@
         Ellipse:
             source: root.temp_get_hostile()
             pos: self.pos
-            size: self.size
+            #size: self.size
 
 <PlayerWeapons>
     size: 78, 27
@@ -59,6 +59,7 @@
         source: choose(screenconfig[root.name]['bg'])
 
     FloatLayout:
+        id: GameView
         canvas:
             Rectangle:
                 texture: root.score_label.texture

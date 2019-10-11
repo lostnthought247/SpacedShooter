@@ -10,6 +10,7 @@ from spacegame.entities.ships import PlayerShip
 from spacegame.config import physics
 from spacegame.config import screens
 from spacegame.managers import SoundManager
+from random import randint
 
 
 class IntroScreen(Screen):
@@ -117,6 +118,8 @@ class CombatScreen(Screen):
     spaceships = ListProperty()
     asteroids = ListProperty()
     explosions = ListProperty()
+    hostile_odd_move = True
+    random_select_action = None
 
 
     def __init__(self, **kwargs):
@@ -202,14 +205,53 @@ class CombatScreen(Screen):
         self.player.angle += rotation
         self.player.speed = speed
 
+    def accelerate_hostile(
+        self, unit, physics=physics
+    ):
+        """Calculate the acceleration changes based on the key pressed."""
+        minspeed = 0
+        rotation = 0
+        speed = self.hostile.speed
+        topspeed = self.hostile.stat('speed')
+
+        # Acceleration and turning are configs that modify movement overall.
+        acceleration = physics.get('acceleration', 0.25)
+        turning = physics.get('turning', 25)
+
+        # Make rotation dependent on speed.
+        angle_delta = turning * unit * topspeed
+        # Make acceleration dependent on speed.
+        speed_delta = acceleration * unit * topspeed
+
+
+        random_select_action = randint(1,5)
+
+        if random_select_action == 1:
+            if speed < topspeed:
+                speed = min(topspeed, speed + speed_delta*4)
+        if random_select_action == 2:
+            if speed > minspeed:
+                speed = max(minspeed, speed - speed_delta*4)
+        if random_select_action == 3:
+            rotation += angle_delta
+        if random_select_action == 4:
+            rotation -= angle_delta
+        # if random_select_action == 5:
+        #     self.hostile.fire()
+
+        self.hostile.angle += rotation
+        self.hostile.speed = speed
+
     def update(self, dt):
         """Step the scene forward."""
         # First, step time forward.
         self.player.lastfired += dt
         self.accelerate_hero(dt)
+        self.accelerate_hostile(dt)
 
         # Next, move the objects around the screen
         self.player.move(windowsize=Window.size)
+        self.hostile.move(windowsize=Window.size)
         for shell in self.player.shells:
             shell.move(windowsize=Window.size)
             if shell.offscreen:
@@ -219,21 +261,24 @@ class CombatScreen(Screen):
         # Finally, check for any collisions
         self.detect_collisions()
 
-
+    def new_remove_widget(self, widget_object):
+        self.ids.GameView.remove_widget(widget_object)
 
     def detect_collisions(self):
         if self.player.collide_widget(self.hostile):
+            #
+            #sfx = SoundManager.sfx.get("explosion1.ogg")
+            #SoundManager.play_sfx("explosion1.ogg")
             Logger.info("Ship 2 Ship Collision Detected!")
-            self.parent.hostile.pos = (-10000, -10000)
-            self.remove_widget(self.hostile)
-            self.player.pos = (-10000, -10000)
-            self.parent.remove_widget(self.player)
-        # for shell in self.player.shell:
-        #     Logger.info("Ship 2 Shot Collision Detected!")
-        #     self.hostile.pos = (-10000, -10000)
+            #self.hostile.pos = (-10000, -10000)
+            self.new_remove_widget(self.hostile)
+            self.new_remove_widget(self.player)
+        for shell in self.player.shells:
+            if self.hostile.collide_widget(shell):
+             Logger.info("Ship 2 Shot Collision Detected!")
+             self.new_remove_widget(self.hostile)
+        #     sssself.hostile.pos = (-10000, -10000)
         #     self.player.shells.pos = (-10000, -10000)
-
-
 
     def start_soundtrack(self):
         """Choose and play music for the combat scene."""

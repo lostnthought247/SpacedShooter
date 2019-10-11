@@ -53,6 +53,9 @@ class BaseShip(Widget):
         super().__init__(**kwargs)
         self.dataset = dataset
         self.load(shiptype)
+        self.lives = 3
+        self.exp = 0
+        self.level = 1
 
     def load(self, type):
         """Load the ship data according to type.
