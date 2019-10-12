@@ -32,7 +32,7 @@ class BaseObject(Widget):
     speed = NumericProperty(0)
     type = StringProperty()
 
-    def __init__(self, objtype='basic', dataset=None, **kwargs):
+    def __init__(self, objtype='lg_asteroid', dataset=None, **kwargs):
         super().__init__(**kwargs)
         self.dataset = dataset
         self.load(objtype)
@@ -66,3 +66,16 @@ class BaseObject(Widget):
                 self.pos[i] = windowsize[i]
             elif self.pos[i] > windowsize[i]+10:
                 self.pos[i] = 0
+
+    def temp_get_asteroid(self):
+            asteroid_img = "rock_stone_lg.png"
+            return asteroid_img
+
+
+
+class AsteroidObj(BaseObject):
+    def __init__(self, objtype='lg_asteroid', dataset=obstacles, **kwargs):
+        super().__init__(objtype=objtype, dataset=dataset, **kwargs)
+
+        self.angle = randint(-360,360)
+        self.speed = randint(1,5)/2.5

@@ -7,10 +7,12 @@ from kivy.uix.screenmanager import Screen
 from random import choice
 
 from spacegame.entities.ships import PlayerShip
+from spacegame.entities.objects import AsteroidObj
 from spacegame.config import physics
 from spacegame.config import screens
 from spacegame.managers import SoundManager
 from random import randint
+from kivy.vector import Vector
 
 
 class IntroScreen(Screen):
@@ -109,13 +111,17 @@ class CombatScreen(Screen):
 
     player = ObjectProperty(None)
     hostile = ObjectProperty(None)
+    asteroid = ObjectProperty(None)
     shiptype = StringProperty(None)
     updater = None
     lives = NumericProperty(None)
+    new_round = True
 
 
     # In progress 10/7 - sets kv list prop. for ships, objects, and explosions
-    spaceships = ListProperty()
+    spaceships = []
+    spaceships.append(player)
+    spaceships.append(hostile)
     asteroids = ListProperty()
     explosions = ListProperty()
     hostile_odd_move = True
@@ -242,16 +248,30 @@ class CombatScreen(Screen):
         self.hostile.angle += rotation
         self.hostile.speed = speed
 
+    def set_asteroid_details(self):
+        for asteroid in self.asteroids:
+            if self.asteroid.angle == None:
+                self.asteroid.angle =  randint(-360-360)
+        self.asteroid.speed = 1
+
     def update(self, dt):
         """Step the scene forward."""
         # First, step time forward.
         self.player.lastfired += dt
         self.accelerate_hero(dt)
         self.accelerate_hostile(dt)
+        self.set_asteroid_details()
+        # if self.new_round == True:
+        #     self.generate_asteroid(dt)
+        #     self.new_round = False
+        if len(self.asteroids) < 4:
+            self.generate_asteroid(dt)
 
         # Next, move the objects around the screen
         self.player.move(windowsize=Window.size)
         self.hostile.move(windowsize=Window.size)
+        for asteroid in self.asteroids:
+            asteroid.move(windowsize=Window.size)
         for shell in self.player.shells:
             shell.move(windowsize=Window.size)
             if shell.offscreen:
@@ -276,9 +296,32 @@ class CombatScreen(Screen):
         for shell in self.player.shells:
             if self.hostile.collide_widget(shell):
              Logger.info("Ship 2 Shot Collision Detected!")
+             Logger.info(str(len(self.spaceships)))
              self.new_remove_widget(self.hostile)
-        #     sssself.hostile.pos = (-10000, -10000)
-        #     self.player.shells.pos = (-10000, -10000)
+            for asteroid in self.asteroids:
+                if self.hostile.collide_widget(asteroid):
+                 Logger.info("astroid 2 Shot Collision Detected!")
+                 Logger.info(str(len(self.spaceships)))
+
+        for asteroid in self.asteroids:
+            if self.player.collide_widget(asteroid):
+             Logger.info("Ship 2 Astroid Collision Detected!")
+             self.new_remove_widget(self.asteroid)
+
+    def generate_asteroid(self, dt):
+        # use left, bottom positions because asteroids can fly around screen
+        positions = {
+            'left':   Vector(0, randint(0, Window.size[1])),
+            'bottom': Vector(randint(0, Window.size[0]), 0),
+        }
+        position = choice(list(positions.values()))
+        asteroid = AsteroidObj()
+        asteroid.pos = position
+        asteroid.angle = randint(0, 360)
+        asteroid.speed = 1
+        self.add_widget(asteroid)
+        self.asteroids.append(asteroid)
+
 
     def start_soundtrack(self):
         """Choose and play music for the combat scene."""

@@ -3,6 +3,7 @@
 lg_asteroid = {
     'skin': 'rock_stone_lg.png',
     'type': 'obstacle',
+    'speed':10,
     }
 
 med_asteroid = {

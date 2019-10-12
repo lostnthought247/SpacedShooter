@@ -13,7 +13,22 @@
         Ellipse:
             source: root.skin
             pos: self.pos
-            # size: self.size
+            size: 75, 75
+
+<AsteroidObj>
+    size: 50, 50
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: self.angle - 90
+            origin: self.center
+    canvas.after:
+        PopMatrix
+    canvas:
+        Ellipse:
+            source: root.temp_get_asteroid()
+            pos: self.pos
+            size: 75, 75
 
 <HostileShip>
     size: 50, 50
@@ -51,6 +66,7 @@
     name: "Combat"
     player: player_ship
     hostile: hostile_ship
+    asteroid: asteroid_obj
     Image:
         allow_stretch: True
         keep_ratio: False
@@ -73,3 +89,8 @@
             id: hostile_ship
             size_hint: None, None
             pos: 400, 400
+
+        AsteroidObj:
+            id: asteroid_obj
+            size_hint: None, None
+            pos: 300, 300
