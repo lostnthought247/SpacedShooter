@@ -152,6 +152,39 @@ class HostileShip(BaseShip):
             hostile = "hostile" + num + ".png"
             return hostile
 
+    def fire(self):
+        """Fire the ship's weapons."""
+        Logger.debug('Entities: Firing weapons.')
+        shell = PlayerWeapons(weapontype=self.weapontype)
+
+        if shell.sfx != self.weaponsound:  # The sound effect has changed.
+            # Remove the old sound effect.
+            if self.weaponsound is not None:
+                sfx = SoundManager.sfx.get(self.weaponsound)
+                SoundManager.remove_sfx(sfx, self)
+
+            # Add the new sound effect.
+            self.weaponsound = shell.sfx
+            SoundManager.add_sfx(shell.sfx, self)
+
+        Logger.debug('Entities: Last Fired: {}'.format(self.lastfired))
+        if self.lastfired >= shell.stats['recharge']:
+            self.lastfired = 0.0
+
+            # Position the shell in front of the ship.
+            shell.angle = self.angle
+            shell.speed = shell.stats['speed']
+            shell.pos = self.pos
+
+            # Add the shell to the list of fired weapons to track.
+            self.shells.append(shell)
+            self.parent.add_widget(shell)
+            SoundManager.play_sfx(shell.sfx)
+
+            Logger.debug('Entities: Bombs away!')
+        else:
+            Logger.debug('Entities: Weapons are not charged.')
+
 
 class PlayerShip(BaseShip):
     """Player ships default to a specific dataset and have access to boosts."""

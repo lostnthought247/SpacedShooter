@@ -16,7 +16,7 @@
             size: 75, 75
 
 <AsteroidObj>
-    size: 50, 50
+    size: 25, 25
     canvas.before:
         PushMatrix
         Rotate:
@@ -43,10 +43,10 @@
         Ellipse:
             source: root.temp_get_hostile()
             pos: self.pos
-            #size: self.size
+            size: 75, 75
 
 <PlayerWeapons>
-    size: 78, 27
+    size: 50, 27
     size_hint: None, None
     canvas:
         Ellipse:
@@ -60,7 +60,6 @@
             origin: self.center
     canvas.after:
         PopMatrix
-
 
 <CombatScreen>
     name: "Combat"
@@ -88,7 +87,7 @@
         HostileShip:
             id: hostile_ship
             size_hint: None, None
-            pos: 400, 400
+            pos: 500, 500
 
         AsteroidObj:
             id: asteroid_obj

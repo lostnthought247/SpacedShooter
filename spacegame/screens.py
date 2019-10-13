@@ -111,17 +111,19 @@ class CombatScreen(Screen):
 
     player = ObjectProperty(None)
     hostile = ObjectProperty(None)
-    asteroid = ObjectProperty(None)
+    #asteroid = ObjectProperty(None)   # trash???
     shiptype = StringProperty(None)
     updater = None
     lives = NumericProperty(None)
     new_round = True
 
 
-    # In progress 10/7 - sets kv list prop. for ships, objects, and explosions
+    # In progress 10/12 - sets kv list prop. for ships, objects, and explosions
     spaceships = []
     spaceships.append(player)
     spaceships.append(hostile)
+    objects = []
+    shells = []
     asteroids = ListProperty()
     explosions = ListProperty()
     hostile_odd_move = True
@@ -230,37 +232,39 @@ class CombatScreen(Screen):
         speed_delta = acceleration * unit * topspeed
 
 
-        random_select_action = randint(1,5)
-
-        if random_select_action == 1:
-            if speed < topspeed:
-                speed = min(topspeed, speed + speed_delta*4)
-        if random_select_action == 2:
-            if speed > minspeed:
-                speed = max(minspeed, speed - speed_delta*4)
-        if random_select_action == 3:
+        random_select_action = randint(1,100)
+        if random_select_action < 20:
             rotation += angle_delta
-        if random_select_action == 4:
+        elif random_select_action  < 40:
             rotation -= angle_delta
-        # if random_select_action == 5:
-        #     self.hostile.fire()
+        elif random_select_action < 80:
+            if speed < topspeed:
+                speed = min(topspeed, speed + speed_delta)
+        elif random_select_action < 90:
+            if speed > minspeed:
+                speed = max(minspeed, speed - speed_delta)
+
+        if random_select_action == 20:
+            self.hostile.fire()
 
         self.hostile.angle += rotation
         self.hostile.speed = speed
 
-    def set_asteroid_details(self):
-        for asteroid in self.asteroids:
-            if self.asteroid.angle == None:
-                self.asteroid.angle =  randint(-360-360)
-        self.asteroid.speed = 1
+    # def set_asteroid_details(self):
+    #     for asteroid in self.asteroids:
+    #         if self.asteroid.angle == None:
+    #             self.asteroid.angle =  randint(-360-360)
+    #     self.asteroid.speed = 1
 
     def update(self, dt):
         """Step the scene forward."""
         # First, step time forward.
         self.player.lastfired += dt
+        self.hostile.lastfired += dt
         self.accelerate_hero(dt)
         self.accelerate_hostile(dt)
-        self.set_asteroid_details()
+
+        #self.set_asteroid_details()
         # if self.new_round == True:
         #     self.generate_asteroid(dt)
         #     self.new_round = False
@@ -277,36 +281,77 @@ class CombatScreen(Screen):
             if shell.offscreen:
                 self.player.shells.remove(shell)
                 self.remove_widget(shell)
+        for shell in self.hostile.shells:
+            shell.move(windowsize=Window.size)
+            if shell.offscreen:
+                self.hostile.shells.remove(shell)
+                self.remove_widget(shell)
 
         # Finally, check for any collisions
         self.detect_collisions()
 
+    def check_collide_asteroid(self, asteroid):
+        pass
+        # for ship in self.spaceships:
+        #     if asteroid.pos == ship.pos:
+        #         self.asteroids.remove(asteroid)
+        #         self.ids.GameView.remove_widget(asteroid)
+        # for other_asteroid in self.asteroids:
+        #     if other_asteroid == asteroid:
+        #         pass
+        #     elif other_asteroid.pos == asteroid.pos:
+        #         self.asteroids.remove(asteroid)
+        #         self.asteroids.remove(other_asteroid)
+        #         self.ids.GameView.remove_widget(asteroid)
+        #         self.ids.GameView.remove_widget(other_asteroid)
+
     def new_remove_widget(self, widget_object):
         self.ids.GameView.remove_widget(widget_object)
 
-    def detect_collisions(self):
-        if self.player.collide_widget(self.hostile):
-            #
-            #sfx = SoundManager.sfx.get("explosion1.ogg")
-            #SoundManager.play_sfx("explosion1.ogg")
-            Logger.info("Ship 2 Ship Collision Detected!")
-            #self.hostile.pos = (-10000, -10000)
-            self.new_remove_widget(self.hostile)
-            self.new_remove_widget(self.player)
-        for shell in self.player.shells:
-            if self.hostile.collide_widget(shell):
-             Logger.info("Ship 2 Shot Collision Detected!")
-             Logger.info(str(len(self.spaceships)))
-             self.new_remove_widget(self.hostile)
-            for asteroid in self.asteroids:
-                if self.hostile.collide_widget(asteroid):
-                 Logger.info("astroid 2 Shot Collision Detected!")
-                 Logger.info(str(len(self.spaceships)))
 
+    def detect_collisions(self):
         for asteroid in self.asteroids:
-            if self.player.collide_widget(asteroid):
-             Logger.info("Ship 2 Astroid Collision Detected!")
-             self.new_remove_widget(self.asteroid)
+            self.check_collide_asteroid(asteroid)
+
+        #     if self.hostile.collide_widget(asteroid):
+        #         self.remove_asteroid(asteroid)
+        #         Logger.info("Collision: Hostile to Asteroid")
+        #     if self.player.collide_widget(asteroid):
+        #         self.remove_asteroid(asteroid)
+        #         Logger.info("Collision: Hostile to Player")
+
+        # for ship in self.spaceships:
+        #     for object in self.asteroids:
+        #         if ship.collide_widget(object):
+        #             sound = SoundLoader.load('explosion1.ogg')
+        #             sound.play()
+        #             Logger.info("Ship 2 Object Collision Detected!")
+        #             self.new_remove_widget(self.ship)
+        #     for shell in self.shells:
+        #         if ship.collide_widget(shell):
+        #             sound = SoundLoader.load('explosion1.ogg')
+        #             sound.play()
+        #             Logger.info("Ship 2 Laser Collision Detected!")
+        #             self.new_remove_widget(self.ship)
+
+        # for shell in self.player.shells:
+        #     if self.hostile.collide_widget(shell):
+        #         sound = SoundLoader.load('explosion1.ogg')
+        #         sound.play()
+        #          Logger.info("Ship 2 Shot Collision Detected!")
+        #          Logger.info(str(len(self.spaceships)))
+        #          self.new_remove_widget(self.hostile)
+        #     for asteroid in self.asteroids:
+        #         if self.hostile.collide_widget(asteroid):
+        #          Logger.info("astroid 2 Shot Collision Detected!")
+        #          Logger.info(str(len(self.spaceships)))
+        #     sound = SoundLoader.load('explosion1.ogg')
+        #     sound.play()
+        #
+        # for asteroid in self.asteroids:
+        #     if self.player.collide_widget(asteroid):
+        #      Logger.info("Ship 2 Astroid Collision Detected!")
+        #      self.new_remove_widget(self.asteroid)
 
     def generate_asteroid(self, dt):
         # use left, bottom positions because asteroids can fly around screen
@@ -319,8 +364,10 @@ class CombatScreen(Screen):
         asteroid.pos = position
         asteroid.angle = randint(0, 360)
         asteroid.speed = 1
-        self.add_widget(asteroid)
+        self.ids.GameView.add_widget(asteroid)
+        # self.add_widget(asteroid)
         self.asteroids.append(asteroid)
+        return asteroid
 
 
     def start_soundtrack(self):

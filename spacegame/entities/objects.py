@@ -64,7 +64,7 @@ class BaseObject(Widget):
         for i in [0, 1]:  # Wrap the screen.
             if self.pos[i] < -5:
                 self.pos[i] = windowsize[i]
-            elif self.pos[i] > windowsize[i]+10:
+            elif self.pos[i] > windowsize[i]:
                 self.pos[i] = 0
 
     def temp_get_asteroid(self):
