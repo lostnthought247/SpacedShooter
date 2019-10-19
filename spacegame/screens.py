@@ -346,7 +346,7 @@ class CombatScreen(Screen):
 
 
     def my_popup(self):
-    """ The popup that appears upon player death """
+        """ The popup that appears upon player death """
 
         # creates/formats popup content
         content = BoxLayout(orientation='vertical')
