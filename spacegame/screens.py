@@ -156,6 +156,17 @@ class CombatScreen(Screen):
 
         # Set the event interval of every frame
         self.updater = Clock.schedule_interval(self.update, 1.0/60.0)
+        self.collidables = []
+        self.spaceships = []
+        self.spaceships.append(self.player)
+        self.spaceships.append(self.hostile)
+        for i in range(4):
+            self.generate_asteroid()
+        for asteroid in self.asteroids:
+            self.collidables.append(asteroid)
+            print("----------", self.collidables)
+        for ship in self.spaceships:
+            self.collidables.append(ship)
 
     def on_pre_leave(self):
         """Perform clean up right before the scene is switched from."""
@@ -264,12 +275,6 @@ class CombatScreen(Screen):
         self.accelerate_hero(dt)
         self.accelerate_hostile(dt)
 
-        #self.set_asteroid_details()
-        # if self.new_round == True:
-        #     self.generate_asteroid(dt)
-        #     self.new_round = False
-        if len(self.asteroids) < 4:
-            self.generate_asteroid(dt)
 
         # Next, move the objects around the screen
         self.player.move(windowsize=Window.size)
@@ -310,8 +315,18 @@ class CombatScreen(Screen):
 
 
     def detect_collisions(self):
-        for asteroid in self.asteroids:
-            self.check_collide_asteroid(asteroid)
+        print("xxxxxxxx", self.collidables)
+        for object in self.collidables:
+            for other_object in self.collidables:
+                if object != other_object:
+                    if object.collide_widget(other_object):
+                        if object == self.player or other_object == self.player:
+                            pass
+                        self.new_remove_widget(object)
+                        self.collidables.remove(object)
+                        self.new_remove_widget(other_object)
+                        self.collidables.remove(other_object)
+
 
         #     if self.hostile.collide_widget(asteroid):
         #         self.remove_asteroid(asteroid)
@@ -353,7 +368,7 @@ class CombatScreen(Screen):
         #      Logger.info("Ship 2 Astroid Collision Detected!")
         #      self.new_remove_widget(self.asteroid)
 
-    def generate_asteroid(self, dt):
+    def generate_asteroid(self):
         # use left, bottom positions because asteroids can fly around screen
         positions = {
             'left':   Vector(0, randint(0, Window.size[1])),

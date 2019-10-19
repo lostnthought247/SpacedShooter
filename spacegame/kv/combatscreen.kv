@@ -16,7 +16,8 @@
             size: 75, 75
 
 <AsteroidObj>
-    size: 25, 25
+    size: 50, 50
+    size_hint: None, None
     canvas.before:
         PushMatrix
         Rotate:
@@ -65,7 +66,6 @@
     name: "Combat"
     player: player_ship
     hostile: hostile_ship
-    asteroid: asteroid_obj
     Image:
         allow_stretch: True
         keep_ratio: False
@@ -88,8 +88,3 @@
             id: hostile_ship
             size_hint: None, None
             pos: 500, 500
-
-        AsteroidObj:
-            id: asteroid_obj
-            size_hint: None, None
-            pos: 300, 300
