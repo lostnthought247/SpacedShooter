@@ -13,7 +13,11 @@ from spacegame.config import screens
 from spacegame.managers import SoundManager
 from random import randint
 from kivy.vector import Vector
-
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.image import Image
+from kivy.uix.boxlayout import BoxLayout
 
 class IntroScreen(Screen):
     """The very first screen with options for changing screens.
@@ -104,7 +108,6 @@ class BaseScreen(Screen):
             'Changing the ship displayed in the base to the '
             '"{}" type.'.format(self.ship.type)
             )
-
 
 class CombatScreen(Screen):
     """The screen that the user flies around shooting enemies."""
@@ -273,7 +276,8 @@ class CombatScreen(Screen):
         self.player.lastfired += dt
         self.hostile.lastfired += dt
         self.accelerate_hero(dt)
-        self.accelerate_hostile(dt)
+        if self.hostile in self.collidables:
+            self.accelerate_hostile(dt)
 
 
         # Next, move the objects around the screen
@@ -295,20 +299,6 @@ class CombatScreen(Screen):
         # Finally, check for any collisions
         self.detect_collisions()
 
-    def check_collide_asteroid(self, asteroid):
-        pass
-        # for ship in self.spaceships:
-        #     if asteroid.pos == ship.pos:
-        #         self.asteroids.remove(asteroid)
-        #         self.ids.GameView.remove_widget(asteroid)
-        # for other_asteroid in self.asteroids:
-        #     if other_asteroid == asteroid:
-        #         pass
-        #     elif other_asteroid.pos == asteroid.pos:
-        #         self.asteroids.remove(asteroid)
-        #         self.asteroids.remove(other_asteroid)
-        #         self.ids.GameView.remove_widget(asteroid)
-        #         self.ids.GameView.remove_widget(other_asteroid)
 
     def new_remove_widget(self, widget_object):
         self.ids.GameView.remove_widget(widget_object)
@@ -321,11 +311,46 @@ class CombatScreen(Screen):
                 if object != other_object:
                     if object.collide_widget(other_object):
                         if object == self.player or other_object == self.player:
-                            pass
+                            self.my_popup()
                         self.new_remove_widget(object)
                         self.collidables.remove(object)
                         self.new_remove_widget(other_object)
                         self.collidables.remove(other_object)
+            all_shells = []
+            for shell in self.player.shells:
+                all_shells.append(shell)
+            for shell in self.hostile.shells:
+                all_shells.append(shell)
+            for shell in all_shells:
+                if object.collide_widget(shell):
+                    if object == self.player and shell.origin == "player":
+                        pass
+                    elif object == self.hostile and shell.origin == "hostile":
+                        pass
+                    elif object == self.player or other_object == self.player:
+                        self.my_popup()
+
+                    else:
+                        self.new_remove_widget(object)
+                        self.collidables.remove(object)
+                        #self.new_remove_widget(shell)
+                        #self.shells.remove(shell)
+
+
+    def my_popup(self):
+        print("popup")
+        content = BoxLayout(orientation='vertical')
+        image = Image(source="deadscreen.png", size_hint=(1,1))
+        btn1 = Button(text='Exit', size_hint=(1,.2))
+        content.add_widget(image)
+        content.add_widget(btn1)
+        popup = Popup(title='You Crashed',title_align="center", content=content, size_hint=(.6,.6))
+
+        btn1.bind(on_press=popup.dismiss)
+
+        popup.open()
+
+
 
 
         #     if self.hostile.collide_widget(asteroid):

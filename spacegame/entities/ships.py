@@ -172,6 +172,7 @@ class HostileShip(BaseShip):
             self.lastfired = 0.0
 
             # Position the shell in front of the ship.
+            shell.origin = "hostile"
             shell.angle = self.angle
             shell.speed = shell.stats['speed']
             shell.pos = self.pos
@@ -212,6 +213,7 @@ class PlayerShip(BaseShip):
             self.lastfired = 0.0
 
             # Position the shell in front of the ship.
+            shell.origin = "player"
             shell.angle = self.angle
             shell.speed = shell.stats['speed']
             shell.pos = self.pos
