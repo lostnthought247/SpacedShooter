@@ -159,6 +159,8 @@ class CombatScreen(Screen):
 
         # Set the event interval of every frame
         self.updater = Clock.schedule_interval(self.update, 1.0/60.0)
+
+        # Populate round/level objects and collidable lists
         self.collidables = []
         self.spaceships = []
         self.spaceships.append(self.player)
@@ -264,12 +266,6 @@ class CombatScreen(Screen):
         self.hostile.angle += rotation
         self.hostile.speed = speed
 
-    # def set_asteroid_details(self):
-    #     for asteroid in self.asteroids:
-    #         if self.asteroid.angle == None:
-    #             self.asteroid.angle =  randint(-360-360)
-    #     self.asteroid.speed = 1
-
     def update(self, dt):
         """Step the scene forward."""
         # First, step time forward.
@@ -301,35 +297,47 @@ class CombatScreen(Screen):
 
 
     def new_remove_widget(self, widget_object):
+        # removes widget from the GameView FloatLayout
         self.ids.GameView.remove_widget(widget_object)
 
 
     def detect_collisions(self):
-        print("xxxxxxxx", self.collidables)
+        # loops through all non-shell objects looking for collisions
         for object in self.collidables:
             for other_object in self.collidables:
+                # ignore self to self matches
                 if object != other_object:
                     if object.collide_widget(other_object):
+                        # Checks if players died
                         if object == self.player or other_object == self.player:
                             self.my_popup()
+
+                        # Removes colliding objects
                         self.new_remove_widget(object)
                         self.collidables.remove(object)
                         self.new_remove_widget(other_object)
                         self.collidables.remove(other_object)
+
+            # Creates list of current active shots/shells
             all_shells = []
             for shell in self.player.shells:
                 all_shells.append(shell)
             for shell in self.hostile.shells:
                 all_shells.append(shell)
+            # Loops through current active shells checking for collisions
             for shell in all_shells:
                 if object.collide_widget(shell):
+                    # ignores self friendly fire for player shells
                     if object == self.player and shell.origin == "player":
                         pass
+                    # ignores self friendly fire for hostile shells
                     elif object == self.hostile and shell.origin == "hostile":
                         pass
+                    # Triggers round end notification if player collides
                     elif object == self.player or other_object == self.player:
                         self.my_popup()
 
+                    # Removes object that collides with shells
                     else:
                         self.new_remove_widget(object)
                         self.collidables.remove(object)
@@ -338,60 +346,23 @@ class CombatScreen(Screen):
 
 
     def my_popup(self):
-        print("popup")
+    """ The popup that appears upon player death """
+
+        # creates/formats popup content
         content = BoxLayout(orientation='vertical')
         image = Image(source="deadscreen.png", size_hint=(1,1))
         btn1 = Button(text='Exit', size_hint=(1,.2))
         content.add_widget(image)
         content.add_widget(btn1)
+
+        # creates popup from content
         popup = Popup(title='You Crashed',title_align="center", content=content, size_hint=(.6,.6))
 
+        # binds button to pop-up window close
         btn1.bind(on_press=popup.dismiss)
 
+        # Opens popup
         popup.open()
-
-
-
-
-        #     if self.hostile.collide_widget(asteroid):
-        #         self.remove_asteroid(asteroid)
-        #         Logger.info("Collision: Hostile to Asteroid")
-        #     if self.player.collide_widget(asteroid):
-        #         self.remove_asteroid(asteroid)
-        #         Logger.info("Collision: Hostile to Player")
-
-        # for ship in self.spaceships:
-        #     for object in self.asteroids:
-        #         if ship.collide_widget(object):
-        #             sound = SoundLoader.load('explosion1.ogg')
-        #             sound.play()
-        #             Logger.info("Ship 2 Object Collision Detected!")
-        #             self.new_remove_widget(self.ship)
-        #     for shell in self.shells:
-        #         if ship.collide_widget(shell):
-        #             sound = SoundLoader.load('explosion1.ogg')
-        #             sound.play()
-        #             Logger.info("Ship 2 Laser Collision Detected!")
-        #             self.new_remove_widget(self.ship)
-
-        # for shell in self.player.shells:
-        #     if self.hostile.collide_widget(shell):
-        #         sound = SoundLoader.load('explosion1.ogg')
-        #         sound.play()
-        #          Logger.info("Ship 2 Shot Collision Detected!")
-        #          Logger.info(str(len(self.spaceships)))
-        #          self.new_remove_widget(self.hostile)
-        #     for asteroid in self.asteroids:
-        #         if self.hostile.collide_widget(asteroid):
-        #          Logger.info("astroid 2 Shot Collision Detected!")
-        #          Logger.info(str(len(self.spaceships)))
-        #     sound = SoundLoader.load('explosion1.ogg')
-        #     sound.play()
-        #
-        # for asteroid in self.asteroids:
-        #     if self.player.collide_widget(asteroid):
-        #      Logger.info("Ship 2 Astroid Collision Detected!")
-        #      self.new_remove_widget(self.asteroid)
 
     def generate_asteroid(self):
         # use left, bottom positions because asteroids can fly around screen
