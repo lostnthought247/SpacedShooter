@@ -1,9 +1,9 @@
-"""The ship data that describes each type of player ship."""
+"""The obstacle data that describes space perils."""
 
 lg_asteroid = {
     'skin': 'rock_stone_lg.png',
     'type': 'obstacle',
-    'speed':10,
+    'speed': 10,
     }
 
 med_asteroid = {

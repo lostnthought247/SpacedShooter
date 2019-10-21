@@ -1,4 +1,4 @@
-"""The ship data that describes each type of player ship."""
+"""Data for items that cause events."""
 
 
 sm_explodable = {

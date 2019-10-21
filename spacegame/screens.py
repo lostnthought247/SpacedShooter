@@ -1,24 +1,29 @@
+"""Controllers for the various game screens."""
+from random import choice, randint
+
 from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.logger import Logger
-from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty
+from kivy.properties import (
+    ListProperty,
+    NumericProperty,
+    ObjectProperty,
+    StringProperty,
+    )
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.image import Image
 from kivy.uix.label import CoreLabel
+from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
-from random import choice
 
 from spacegame.entities.ships import PlayerShip
 from spacegame.entities.objects import AsteroidObj
 from spacegame.config import physics
 from spacegame.config import screens
 from spacegame.managers import SoundManager
-from random import randint
-from kivy.vector import Vector
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.image import Image
-from kivy.uix.boxlayout import BoxLayout
-from kivy.core.audio import SoundLoader
+
 
 class IntroScreen(Screen):
     """The very first screen with options for changing screens.
@@ -110,17 +115,16 @@ class BaseScreen(Screen):
             '"{}" type.'.format(self.ship.type)
             )
 
+
 class CombatScreen(Screen):
     """The screen that the user flies around shooting enemies."""
 
     player = ObjectProperty(None)
     hostile = ObjectProperty(None)
-    #asteroid = ObjectProperty(None)   # trash???
     shiptype = StringProperty(None)
     updater = None
     lives = NumericProperty(None)
     new_round = True
-
 
     # In progress 10/12 - sets kv list prop. for ships, objects, and explosions
     spaceships = []
@@ -132,7 +136,6 @@ class CombatScreen(Screen):
     explosions = ListProperty()
     hostile_odd_move = True
     random_select_action = None
-
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -248,11 +251,10 @@ class CombatScreen(Screen):
         # Make acceleration dependent on speed.
         speed_delta = acceleration * unit * topspeed
 
-
-        random_select_action = randint(1,100)
+        random_select_action = randint(1, 100)
         if random_select_action < 20:
             rotation += angle_delta
-        elif random_select_action  < 40:
+        elif random_select_action < 40:
             rotation -= angle_delta
         elif random_select_action < 80:
             if speed < topspeed:
@@ -276,7 +278,6 @@ class CombatScreen(Screen):
         if self.hostile in self.collidables:
             self.accelerate_hostile(dt)
 
-
         # Next, move the objects around the screen
         self.player.move(windowsize=Window.size)
         self.hostile.move(windowsize=Window.size)
@@ -296,11 +297,9 @@ class CombatScreen(Screen):
         # Finally, check for any collisions
         self.detect_collisions(dt)
 
-
     def new_remove_widget(self, widget_object):
         # removes widget from the GameView FloatLayout
         self.ids.GameView.remove_widget(widget_object)
-
 
     def detect_collisions(self, dt):
         # loops through all non-shell objects looking for collisions
@@ -309,10 +308,14 @@ class CombatScreen(Screen):
                 # ignore self to self matches
                 if object != other_object:
                     if object.collide_widget(other_object):
-                        print("Object 1: ", object)
-                        print("Object 2: ", other_object)
+                        Logger.debug(
+                            'Collision Detection: {} and {} collided.'.format(
+                                object,
+                                other_object
+                                )
+                            )
                         # Checks if players died
-                        if object == self.player or other_object == self.player:
+                        if self.player == object or other_object == self.player:
                             # self.my_popup()
                             self.Explosion(object, other_object, dt)
                         # Removes colliding objects
@@ -345,8 +348,8 @@ class CombatScreen(Screen):
                     else:
                         self.new_remove_widget(object)
                         self.collidables.remove(object)
-                        #self.new_remove_widget(shell)
-                        #self.shells.remove(shell)
+                        # self.new_remove_widget(shell)
+                        # self.shells.remove(shell)
 
     def Explosion(self, obj1, obj2, dt):
         print("Explosion!!!!!", obj1, obj2)
@@ -362,13 +365,18 @@ class CombatScreen(Screen):
 
         # creates/formats popup content
         content = BoxLayout(orientation='vertical')
-        image = Image(source="deadscreen.png", size_hint=(1,1))
-        btn1 = Button(text='Exit', size_hint=(1,.2))
+        image = Image(source="deadscreen.png", size_hint=(1, 1))
+        btn1 = Button(text='Exit', size_hint=(1, .2))
         content.add_widget(image)
         content.add_widget(btn1)
 
         # creates popup from content
-        popup = Popup(title='You Crashed',title_align="center", content=content, size_hint=(.6,.6))
+        popup = Popup(
+            title='You Crashed',
+            title_align="center",
+            content=content,
+            size_hint=(.6, .6)
+            )
 
         # binds button to pop-up window close
         btn1.bind(on_press=popup.dismiss)
@@ -400,7 +408,6 @@ class CombatScreen(Screen):
         # self.add_widget(asteroid)
         self.asteroids.append(asteroid)
         return asteroid
-
 
     def start_soundtrack(self):
         """Choose and play music for the combat scene."""
