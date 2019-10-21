@@ -18,6 +18,7 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.boxlayout import BoxLayout
+from kivy.core.audio import SoundLoader
 
 class IntroScreen(Screen):
     """The very first screen with options for changing screens.
@@ -293,7 +294,7 @@ class CombatScreen(Screen):
                 self.remove_widget(shell)
 
         # Finally, check for any collisions
-        self.detect_collisions()
+        self.detect_collisions(dt)
 
 
     def new_remove_widget(self, widget_object):
@@ -301,22 +302,25 @@ class CombatScreen(Screen):
         self.ids.GameView.remove_widget(widget_object)
 
 
-    def detect_collisions(self):
+    def detect_collisions(self, dt):
         # loops through all non-shell objects looking for collisions
         for object in self.collidables:
             for other_object in self.collidables:
                 # ignore self to self matches
                 if object != other_object:
                     if object.collide_widget(other_object):
+                        print("Object 1: ", object)
+                        print("Object 2: ", other_object)
                         # Checks if players died
                         if object == self.player or other_object == self.player:
-                            self.my_popup()
-
+                            # self.my_popup()
+                            self.Explosion(object, other_object, dt)
                         # Removes colliding objects
-                        self.new_remove_widget(object)
-                        self.collidables.remove(object)
-                        self.new_remove_widget(other_object)
-                        self.collidables.remove(other_object)
+                        self.Explosion(object, other_object, dt)
+                        # self.new_remove_widget(object)
+                        # self.collidables.remove(object)
+                        # self.new_remove_widget(other_object)
+                        # self.collidables.remove(other_object)
 
             # Creates list of current active shots/shells
             all_shells = []
@@ -344,6 +348,14 @@ class CombatScreen(Screen):
                         #self.new_remove_widget(shell)
                         #self.shells.remove(shell)
 
+    def Explosion(self, obj1, obj2, dt):
+        print("Explosion!!!!!", obj1, obj2)
+        boom_sound = SoundLoader.load('explosion.ogg')
+        boom_sound.play()
+        obj1.skin = "boom.png"
+        obj2.skin = "boom.png"
+        # Clock.schedule_once(self.new_remove_widget(obj1), 2)
+        # Clock.schedule_once(self.new_remove_widget(obj2), 2)
 
     def my_popup(self):
         """ The popup that appears upon player death """
@@ -366,11 +378,20 @@ class CombatScreen(Screen):
 
     def generate_asteroid(self):
         # use left, bottom positions because asteroids can fly around screen
-        positions = {
-            'left':   Vector(0, randint(0, Window.size[1])),
-            'bottom': Vector(randint(0, Window.size[0]), 0),
-        }
-        position = choice(list(positions.values()))
+        positions = []
+        while len(positions) < 10:
+            location = (randint(1, Window.width), randint(1, Window.height))
+            if abs(self.player.pos[0] - location[0]) < 100:
+                pass
+            elif abs(self.player.pos[1] - location[1]) < 100:
+                pass
+            else:
+                positions.append(location)
+        # positions = {
+        #     'left':   Vector(0, randint(0, Window.size[1])),
+        #     'bottom': Vector(randint(0, Window.size[0]), 0),
+        # }
+        position = choice(positions)
         asteroid = AsteroidObj()
         asteroid.pos = position
         asteroid.angle = randint(0, 360)
