@@ -18,8 +18,8 @@ from kivy.uix.label import CoreLabel
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 
+from spacegame.entities.obstacles import AsteroidObstacle
 from spacegame.entities.ships import PlayerShip
-from spacegame.entities.objects import AsteroidObj
 from spacegame.config import physics
 from spacegame.config import screens
 from spacegame.managers import SoundManager
@@ -102,7 +102,7 @@ class BaseScreen(Screen):
             type (str): The type of ship to display the stats for.
 
         """
-        ship = PlayerShip(shiptype=type)
+        ship = PlayerShip(type=type)
         self.speed = str(ship.stats['speed'])
         self.hp = str(ship.stats['hp'])
         self.attack = str(ship.stats['attack'])
@@ -173,7 +173,6 @@ class CombatScreen(Screen):
             self.generate_asteroid()
         for asteroid in self.asteroids:
             self.collidables.append(asteroid)
-            print("----------", self.collidables)
         for ship in self.spaceships:
             self.collidables.append(ship)
 
@@ -308,11 +307,9 @@ class CombatScreen(Screen):
                 # ignore self to self matches
                 if object != other_object:
                     if object.collide_widget(other_object):
-                        Logger.debug(
-                            'Collision Detection: {} and {} collided.'.format(
-                                object,
-                                other_object
-                                )
+                        Logger.info(
+                            'Collision Detection: '
+                            '{} and {} collided.'.format(object, other_object)
                             )
                         # Checks if players died
                         if self.player == object or other_object == self.player:
@@ -352,7 +349,6 @@ class CombatScreen(Screen):
                         # self.shells.remove(shell)
 
     def Explosion(self, obj1, obj2, dt):
-        print("Explosion!!!!!", obj1, obj2)
         boom_sound = SoundLoader.load('explosion.ogg')
         boom_sound.play()
         obj1.skin = "boom.png"
@@ -400,10 +396,9 @@ class CombatScreen(Screen):
         #     'bottom': Vector(randint(0, Window.size[0]), 0),
         # }
         position = choice(positions)
-        asteroid = AsteroidObj()
+        asteroid = AsteroidObstacle()
+        asteroid.randomize_trajectory()
         asteroid.pos = position
-        asteroid.angle = randint(0, 360)
-        asteroid.speed = 1
         self.ids.GameView.add_widget(asteroid)
         # self.add_widget(asteroid)
         self.asteroids.append(asteroid)
@@ -413,7 +408,9 @@ class CombatScreen(Screen):
         """Choose and play music for the combat scene."""
         sources = screens['Combat']['music']
         self.source = choice(sources)
-        Logger.info('Chose "{}" as the combat music.'.format(self.source))
+        Logger.info(
+            'Application: Chose "{}" as the combat music.'.format(self.source)
+            )
         try:
             SoundManager.music[self.source]
         except KeyError:

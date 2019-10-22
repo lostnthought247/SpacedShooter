@@ -15,7 +15,7 @@
             pos: self.pos
             size: 75, 75
 
-<AsteroidObj>
+<AsteroidObstacle>
     size: 50, 50
     size_hint: None, None
     canvas.before:
@@ -27,7 +27,7 @@
         PopMatrix
     canvas:
         Ellipse:
-            source: root.temp_get_asteroid()
+            source: root.skin
             pos: self.pos
             size: 75, 75
 
@@ -42,11 +42,27 @@
         PopMatrix
     canvas:
         Ellipse:
-            source: root.temp_get_hostile()
+            source: root.skin
             pos: self.pos
             size: 75, 75
 
 <PlayerWeapons>
+    size: 50, 27
+    size_hint: None, None
+    canvas:
+        Ellipse:
+            source: root.skin
+            pos: self.pos
+            size: self.size
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: self.angle
+            origin: self.center
+    canvas.after:
+        PopMatrix
+
+<HostileWeapons>
     size: 50, 27
     size_hint: None, None
     canvas:

@@ -1,55 +1,34 @@
 """Ship weapons."""
 from kivy.logger import Logger
-from kivy.properties import NumericProperty, StringProperty
 from kivy.vector import Vector
-from kivy.uix.widget import Widget
 
 from spacegame.data.weapons import hostiles, players
+from spacegame.entities.widget import Widget
 
 
 class BaseWeapons(Widget):
     """The base weapons loads common properties from data/weapons.
 
     Attributes:
-        angle (int): The rotation angle of the ship in degrees.
         offscreen (bool): True if the shell is not visible. False otherwise.
-        dataset (obj): The data module the weapon belongs to.
-        skin (str): The weapon's image without the path (images go in
-            assets/images).
-        speed (float): The current speed of the ship in made up units.
 
     """
-    angle = NumericProperty(0)
-    charged = False
-    offscreen = False
-    skin = StringProperty()
-    speed = NumericProperty(0)
-    stats = None
-    type = StringProperty()
 
-    def __init__(self, weapontype='lasers', dataset=None, **kwargs):
-        super().__init__(**kwargs)
-        self.dataset = dataset
-        self.load(weapontype)
+    def __init__(self, type='lasers', dataset=None, **kwargs):
+        super().__init__(type=type, dataset=dataset, **kwargs)
+        self.offscreen = False
 
     def load(self, type):
-        """Load the weapon data according to type.
+        """Change the weapon to another type in the dataset.
 
         Args:
             type (str): The key in data/weapons.py to load the data from.
 
         """
-        Logger.debug('Entities: Loading "{}" weapon type.'.format(type))
-        data = getattr(self.dataset, type)
-
-        self.type = type
-        self.sfx = data['sfx']
-        self.skin = data['skin']
-        self.stats = data['stats']
-
-        Logger.debug('Entities: Weapon SFX: {}.'.format(data['sfx']))
-        Logger.debug('Entities: Weapon Skin: {}.'.format(data['skin']))
-        Logger.debug('Entities: Weapon Speed: {}.'.format(data['skin']))
+        super().load(type)
+        self.sfx = self.datum('sfx')
+        self.stats = dict(self.datum('stats'))
+        Logger.debug('Entities: Weapon SFX: {}.'.format(self.sfx))
 
     def move(self, windowsize=(None, None)):
         """Advance the weapon's fire according to its velocity."""
@@ -65,12 +44,12 @@ class BaseWeapons(Widget):
 class HostileWeapons(BaseWeapons):
     """Hostile weapons default to a specific dataset."""
 
-    def __init__(self, weapontype='lasers', dataset=hostiles, **kwargs):
-        super().__init__(weapontype=weapontype, dataset=dataset, **kwargs)
+    def __init__(self, type='lasers', dataset=hostiles, **kwargs):
+        super().__init__(type=type, dataset=dataset, **kwargs)
 
 
 class PlayerWeapons(BaseWeapons):
     """Player weapons default to a specific dataset."""
 
-    def __init__(self, weapontype='lasers', dataset=players, **kwargs):
-        super().__init__(weapontype=weapontype, dataset=dataset, **kwargs)
+    def __init__(self, type='lasers', dataset=players, **kwargs):
+        super().__init__(type=type, dataset=dataset, **kwargs)

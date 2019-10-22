@@ -1,4 +1,4 @@
-"""Ship entities that start from Kivy widgets and branch into player/enemies.
+"""Ship entities that start from game widgets and branch into player/enemies.
 
 Ships have the following stats:
 
@@ -9,81 +9,45 @@ Ships have the following stats:
 
 """
 from kivy.logger import Logger
-from kivy.properties import ListProperty, NumericProperty, StringProperty
-from kivy.vector import Vector
-from kivy.uix.widget import Widget
-from random import randint
+from kivy.properties import ListProperty, StringProperty
 
 from spacegame.data.ships import hostiles, players
-from spacegame.entities.weapons import PlayerWeapons
+from spacegame.entities.weapons import HostileWeapons, PlayerWeapons
+from spacegame.entities.widget import Widget
 from spacegame.managers import SoundManager
 
 
 class BaseShip(Widget):
     """The base ship loads common properties from a dataset in data/ships.
 
-    Args:
-        shiptype (str): The type of ship to instantiate.
-        dataset (obj): The module containing the ship data.
-
     Attributes:
-        angle (int): The rotation angle of the ship in degrees.
-        dataset (obj): The data module the ship belongs to.
         lastfired (float): The time since weapons were fired last.
-        skin (str): The ship's image without the path (images go in
-            assets/images).
-        speed (float): The current speed of the ship in made up units.
         stats (dict): The ships stats. Stats come from spacegame.data.ships.
-        type (str): The key that ship data was loaded from.
-        weaponstype (str): The key that weapons data was loaded from.
+        weapontype (str): The key that weapons data was loaded from.
 
     """
 
-    angle = NumericProperty(0)
-    lastfired = 0.0
     shells = ListProperty()
-    skin = StringProperty()
-    speed = NumericProperty(0)
-    stats = None
-    type = StringProperty()
     weapontype = StringProperty()
-    weaponsound = None
 
-    def __init__(self, shiptype='basic', dataset=None, **kwargs):
-        super().__init__(**kwargs)
-        self.dataset = dataset
-        self.load(shiptype)
-        self.lives = 3
-        self.exp = 0
-        self.level = 1
+    def __init__(self, type='basic', dataset=None, **kwargs):
+        super().__init__(type=type, dataset=dataset, **kwargs)
+        self.weaponsound = None
 
     def load(self, type):
-        """Load the ship data according to type.
+        """Change the ship's type to another type in the dataset.
 
         Args:
-            type (str): The key in data/ships.py to load the data from.
+            type (str): The key in data/ships.py to load the stats from.
+            difficulty (str): The key to load the difficulty from.
 
         """
-        Logger.debug('Entities: Loading "{}" ship type.'.format(type))
-        data = getattr(self.dataset, type)
-
-        self.type = type
-        self.skin = data['skin']
-        self.stats = data['stats']
-        self.weapontype = data['weapons']
-
-        Logger.debug('Entities: Ship Skin: {}.'.format(data['skin']))
-        Logger.debug('Entities: Ship Stats: {}.'.format(data['stats']))
-
-    def move(self, windowsize=(None, None)):
-        """Advance the player ship position according to its velocity."""
-        delta = Vector(self.speed, 0).rotate(self.angle)
-        self.pos = delta + self.pos
-        for i in [0, 1]:  # Wrap the screen.
-            if self.pos[i] < -5:
-                self.pos[i] = windowsize[i]
-            elif self.pos[i] > windowsize[i]+10:
-                self.pos[i] = 0
+        super().load(type)
+        self.stats = dict(self.datum('stats'))
+        self.weapontype = self.datum('weapons')
+        self.lastfired = 0.0
+        Logger.debug('Entities: Ship Stats: {}.'.format(self.stats))
+        Logger.debug('Entities: Ship Weapontype: {}.'.format(self.weapontype))
 
     def stat(self, key):
         """Retrieve a stat value from stats.
@@ -92,11 +56,7 @@ class BaseShip(Widget):
             key (str): The name of the stat to get.
 
         """
-        value = self.stats.get(key)
-        if value is None:
-            raise KeyError('"{}" is not a stat.'.format(key))
-
-        return value
+        return self.stats.get(key)
 
 
 class HostileShip(BaseShip):
@@ -109,14 +69,11 @@ class HostileShip(BaseShip):
 
     """
 
-    difficulty = None
-    modifier = 1
-
-    def __init__(self, shiptype='basic', dataset=hostiles, **kwargs):
-        super().__init__(shiptype=shiptype, dataset=dataset, **kwargs)
+    def __init__(self, type='basic', dataset=hostiles, **kwargs):
+        super().__init__(type=type, dataset=dataset, **kwargs)
 
     def load(self, type, difficulty=None):
-        """Load the data from a hostiles dataset according to type.
+        """Change the ship's type to another type in the dataset.
 
         Args:
             type (str): The key in data/ships.py to load the stats from.
@@ -124,6 +81,8 @@ class HostileShip(BaseShip):
 
         """
         super().load(type)
+        self.difficulty = None
+        self.modifier = 1
         if difficulty is not None:
             modifier = getattr(self.dataset, difficulty)
             if modifier is None:
@@ -147,15 +106,10 @@ class HostileShip(BaseShip):
         modifier = self.modifier if modified else 1
         return modifier * super().stat(key)
 
-    def temp_get_hostile(self):
-            num = str(randint(1, 6))
-            hostile = "hostile" + num + ".png"
-            return hostile
-
     def fire(self):
         """Fire the ship's weapons."""
         Logger.debug('Entities: Firing weapons.')
-        shell = PlayerWeapons(weapontype=self.weapontype)
+        shell = HostileWeapons(type=self.weapontype)
 
         if shell.sfx != self.weaponsound:  # The sound effect has changed.
             # Remove the old sound effect.
@@ -190,13 +144,16 @@ class HostileShip(BaseShip):
 class PlayerShip(BaseShip):
     """Player ships default to a specific dataset and have access to boosts."""
 
-    def __init__(self, shiptype='basic', dataset=players, **kwargs):
-        super().__init__(shiptype=shiptype, dataset=dataset, **kwargs)
+    def __init__(self, type='basic', dataset=players, **kwargs):
+        super().__init__(type=type, dataset=dataset, **kwargs)
+        self.lives = 3
+        self.exp = 0
+        self.level = 1
 
     def fire(self):
         """Fire the ship's weapons."""
         Logger.debug('Entities: Firing weapons.')
-        shell = PlayerWeapons(weapontype=self.weapontype)
+        shell = PlayerWeapons(type=self.weapontype)
 
         if shell.sfx != self.weaponsound:  # The sound effect has changed.
             # Remove the old sound effect.
