@@ -23,6 +23,7 @@ from spacegame.entities.ships import PlayerShip
 from spacegame.config import physics
 from spacegame.config import screens
 from spacegame.managers import SoundManager
+from functools import partial
 
 
 class IntroScreen(Screen):
@@ -126,7 +127,7 @@ class CombatScreen(Screen):
     lives = NumericProperty(None)
     new_round = True
 
-    # In progress 10/12 - sets kv list prop. for ships, objects, and explosions
+
     spaceships = []
     spaceships.append(player)
     spaceships.append(hostile)
@@ -296,7 +297,7 @@ class CombatScreen(Screen):
         # Finally, check for any collisions
         self.detect_collisions(dt)
 
-    def new_remove_widget(self, widget_object):
+    def new_remove_widget(self, widget_object, dt):
         # removes widget from the GameView FloatLayout
         self.ids.GameView.remove_widget(widget_object)
 
@@ -313,14 +314,13 @@ class CombatScreen(Screen):
                             )
                         # Checks if players died
                         if self.player == object or other_object == self.player:
-                            # self.my_popup()
                             self.Explosion(object, other_object, dt)
-                        # Removes colliding objects
-                        self.Explosion(object, other_object, dt)
-                        # self.new_remove_widget(object)
-                        # self.collidables.remove(object)
-                        # self.new_remove_widget(other_object)
-                        # self.collidables.remove(other_object)
+                            # self.my_popup()
+
+                        else:
+                        # if non-player collision
+                            self.Explosion(object, other_object, dt)
+
 
             # Creates list of current active shots/shells
             all_shells = []
@@ -339,22 +339,30 @@ class CombatScreen(Screen):
                         pass
                     # Triggers round end notification if player collides
                     elif object == self.player or other_object == self.player:
-                        self.my_popup()
+                        self.Explosion(object, other_object, dt)
+                        # self.my_popup()
 
                     # Removes object that collides with shells
                     else:
-                        self.new_remove_widget(object)
-                        self.collidables.remove(object)
-                        # self.new_remove_widget(shell)
-                        # self.shells.remove(shell)
+                        self.Explosion(object, other_object, dt)
 
     def Explosion(self, obj1, obj2, dt):
+        Logger.info('Explode: "{}" and "{}" have collided'.format(obj1, obj2))
+        if obj2 in self.collidables:
+            self.collidables.remove(obj1)
+
+        if obj2 in self.collidables:
+            self.collidables.remove(obj2)
         boom_sound = SoundLoader.load('explosion.ogg')
         boom_sound.play()
         obj1.skin = "boom.png"
         obj2.skin = "boom.png"
-        # Clock.schedule_once(self.new_remove_widget(obj1), 2)
-        # Clock.schedule_once(self.new_remove_widget(obj2), 2)
+
+        Clock.schedule_once(partial(self.new_remove_widget, obj1), 1)
+        Clock.schedule_once(partial(self.new_remove_widget, obj2), 1)
+
+
+
 
     def my_popup(self):
         """ The popup that appears upon player death """
@@ -381,7 +389,6 @@ class CombatScreen(Screen):
         popup.open()
 
     def generate_asteroid(self):
-        # use left, bottom positions because asteroids can fly around screen
         positions = []
         while len(positions) < 10:
             location = (randint(1, Window.width), randint(1, Window.height))
@@ -391,10 +398,6 @@ class CombatScreen(Screen):
                 pass
             else:
                 positions.append(location)
-        # positions = {
-        #     'left':   Vector(0, randint(0, Window.size[1])),
-        #     'bottom': Vector(randint(0, Window.size[0]), 0),
-        # }
         position = choice(positions)
         asteroid = AsteroidObstacle()
         asteroid.randomize_trajectory()
