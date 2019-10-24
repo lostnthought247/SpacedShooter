@@ -2,6 +2,12 @@
 
 fast = {
     'skin': 'ship1.png',
+    'states': {
+        'exploded': {
+            'skin': 'boom.png',
+            'sfx': 'explosion.ogg',
+            },
+        },
     'stats': {
         'attack': 1,
         'speed': 9,
@@ -13,6 +19,12 @@ fast = {
 
 basic = {
     'skin': 'ship2.png',
+    'states': {
+        'exploded': {
+            'skin': 'boom.png',
+            'sfx': 'explosion.ogg',
+            },
+        },
     'stats': {
         'attack': 6,
         'speed': 5,
@@ -24,6 +36,12 @@ basic = {
 
 tank = {
     'skin': 'ship3.png',
+    'states': {
+        'exploded': {
+            'skin': 'boom.png',
+            'sfx': 'explosion.ogg',
+            },
+        },
     'stats': {
         'attack': 5,
         'speed': 3,

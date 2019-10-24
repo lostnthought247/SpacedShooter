@@ -52,6 +52,7 @@ class Widget(kivy.uix.widget.Widget):
 
         self.type = type
         self.skin = self.datum('skin')
+        self.states = self.datum('states')
         self.speed = self.datum('speed', default=0)
         self.angle = self.datum('angle', default=0)
 

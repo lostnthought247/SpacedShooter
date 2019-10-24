@@ -59,7 +59,9 @@ class SoundManager:
 
     @classmethod
     def remove_sfx(cls, source, subscriber):
-        """Remove one of the sfx track or its subscriber.
+        """Unsubscribe from an SFX track.
+
+        When there are no subscribers the sound effect is unloaded from memory.
 
         Args:
             source (str): The filename of the track to remove.
@@ -86,7 +88,7 @@ class SoundManager:
 
     @classmethod
     def update_sfx(cls):
-        """Apply the current music volume levels to all the music tracks."""
+        """Apply the current sfx volume levels to all the sfx tracks."""
         for resource in cls.sfx:
             resource.track.volume = cls.sfx_volume()
 

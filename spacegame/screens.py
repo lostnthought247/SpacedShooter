@@ -1,8 +1,8 @@
 """Controllers for the various game screens."""
+from functools import partial
 from random import choice, randint
 
 from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.logger import Logger
 from kivy.properties import (
@@ -23,7 +23,6 @@ from spacegame.entities.ships import PlayerShip
 from spacegame.config import physics
 from spacegame.config import screens
 from spacegame.managers import SoundManager
-from functools import partial
 
 
 class IntroScreen(Screen):
@@ -34,7 +33,6 @@ class IntroScreen(Screen):
     Quit - Exit the application.
 
     """
-    source = None
 
     def on_pre_enter(self):
         """Perform tasks to ready the scene right before it is switched to."""
@@ -126,11 +124,6 @@ class CombatScreen(Screen):
     updater = None
     lives = NumericProperty(None)
     new_round = True
-
-
-    spaceships = []
-    spaceships.append(player)
-    spaceships.append(hostile)
     objects = []
     shells = []
     asteroids = ListProperty()
@@ -168,8 +161,8 @@ class CombatScreen(Screen):
         # Populate round/level objects and collidable lists
         self.collidables = []
         self.spaceships = []
-        self.spaceships.append(self.player)
-        self.spaceships.append(self.hostile)
+        self.init_players()
+        self.init_hostiles()
         for i in range(4):
             self.generate_asteroid()
         for asteroid in self.asteroids:
@@ -314,13 +307,12 @@ class CombatScreen(Screen):
                             )
                         # Checks if players died
                         if self.player == object or other_object == self.player:
-                            self.Explosion(object, other_object, dt)
+                            self.explosion(object, other_object, dt)
                             # self.my_popup()
 
                         else:
-                        # if non-player collision
-                            self.Explosion(object, other_object, dt)
-
+                            # if non-player collision
+                            self.explosion(object, other_object, dt)
 
             # Creates list of current active shots/shells
             all_shells = []
@@ -339,30 +331,29 @@ class CombatScreen(Screen):
                         pass
                     # Triggers round end notification if player collides
                     elif object == self.player or other_object == self.player:
-                        self.Explosion(object, other_object, dt)
+                        self.explosion(object, other_object, dt)
                         # self.my_popup()
 
                     # Removes object that collides with shells
                     else:
-                        self.Explosion(object, other_object, dt)
+                        self.explosion(object, other_object, dt)
 
-    def Explosion(self, obj1, obj2, dt):
+    def explosion(self, obj1, obj2, dt):
         Logger.info('Explode: "{}" and "{}" have collided'.format(obj1, obj2))
-        if obj2 in self.collidables:
-            self.collidables.remove(obj1)
+        self.collidables.remove(obj1)
+        self.collidables.remove(obj2)
 
-        if obj2 in self.collidables:
-            self.collidables.remove(obj2)
-        boom_sound = SoundLoader.load('explosion.ogg')
-        boom_sound.play()
-        obj1.skin = "boom.png"
-        obj2.skin = "boom.png"
+        SoundManager.play_sfx(obj1.states['exploded']['sfx'])
+        SoundManager.play_sfx(obj2.states['exploded']['sfx'])
+
+        SoundManager.remove_sfx(obj1.states['exploded']['sfx'], obj1)
+        SoundManager.remove_sfx(obj2.states['exploded']['sfx'], obj2)
+
+        obj1.skin = obj1.states['exploded']['skin']
+        obj2.skin = obj2.states['exploded']['skin']
 
         Clock.schedule_once(partial(self.new_remove_widget, obj1), 1)
         Clock.schedule_once(partial(self.new_remove_widget, obj2), 1)
-
-
-
 
     def my_popup(self):
         """ The popup that appears upon player death """
@@ -402,10 +393,27 @@ class CombatScreen(Screen):
         asteroid = AsteroidObstacle()
         asteroid.randomize_trajectory()
         asteroid.pos = position
+        SoundManager.add_sfx(asteroid.states['exploded']['sfx'], asteroid)
         self.ids.GameView.add_widget(asteroid)
         # self.add_widget(asteroid)
         self.asteroids.append(asteroid)
         return asteroid
+
+    def init_players(self):
+        """Prepare the player ships."""
+        self.spaceships.append(self.player)
+        SoundManager.add_sfx(
+            self.player.states['exploded']['sfx'],
+            self.player
+            )
+
+    def init_hostiles(self):
+        """Prepare the level's hostiles."""
+        self.spaceships.append(self.hostile)
+        SoundManager.add_sfx(
+            self.hostile.states['exploded']['sfx'],
+            self.hostile
+            )
 
     def start_soundtrack(self):
         """Choose and play music for the combat scene."""
