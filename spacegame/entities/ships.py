@@ -71,6 +71,7 @@ class HostileShip(BaseShip):
 
     def __init__(self, type='basic', dataset=hostiles, **kwargs):
         super().__init__(type=type, dataset=dataset, **kwargs)
+        self.destroyed = False
 
     def load(self, type, difficulty=None):
         """Change the ship's type to another type in the dataset.

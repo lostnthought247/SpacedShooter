@@ -162,7 +162,7 @@ class CombatScreen(Screen):
         self.collidables = []
         self.spaceships = []
         self.init_players()
-        self.init_hostiles()
+        self.init_hostiles(4)
         for i in range(4):
             self.generate_asteroid()
         for asteroid in self.asteroids:
@@ -243,21 +243,21 @@ class CombatScreen(Screen):
         angle_delta = turning * unit * topspeed
         # Make acceleration dependent on speed.
         speed_delta = acceleration * unit * topspeed
+        if self.hostile.destroyed == False:
+            random_select_action = randint(1, 100)
+            if random_select_action < 20:
+                rotation += angle_delta
+            elif random_select_action < 40:
+                rotation -= angle_delta
+            elif random_select_action < 80:
+                if speed < topspeed:
+                    speed = min(topspeed, speed + speed_delta)
+            elif random_select_action < 90:
+                if speed > minspeed:
+                    speed = max(minspeed, speed - speed_delta)
 
-        random_select_action = randint(1, 100)
-        if random_select_action < 20:
-            rotation += angle_delta
-        elif random_select_action < 40:
-            rotation -= angle_delta
-        elif random_select_action < 80:
-            if speed < topspeed:
-                speed = min(topspeed, speed + speed_delta)
-        elif random_select_action < 90:
-            if speed > minspeed:
-                speed = max(minspeed, speed - speed_delta)
-
-        if random_select_action == 20:
-            self.hostile.fire()
+            if random_select_action == 20:
+                self.hostile.fire()
 
         self.hostile.angle += rotation
         self.hostile.speed = speed
@@ -295,6 +295,14 @@ class CombatScreen(Screen):
         self.ids.GameView.remove_widget(widget_object)
 
     def detect_collisions(self, dt):
+
+        # Creates list of current active shots/shells
+        all_shells = []
+        for shell in self.player.shells:
+            all_shells.append(shell)
+        for shell in self.hostile.shells:
+            all_shells.append(shell)
+
         # loops through all non-shell objects looking for collisions
         for object in self.collidables:
             for other_object in self.collidables:
@@ -314,12 +322,7 @@ class CombatScreen(Screen):
                             # if non-player collision
                             self.explosion(object, other_object, dt)
 
-            # Creates list of current active shots/shells
-            all_shells = []
-            for shell in self.player.shells:
-                all_shells.append(shell)
-            for shell in self.hostile.shells:
-                all_shells.append(shell)
+
             # Loops through current active shells checking for collisions
             for shell in all_shells:
                 if object.collide_widget(shell):
@@ -339,21 +342,41 @@ class CombatScreen(Screen):
                         self.explosion(object, other_object, dt)
 
     def explosion(self, obj1, obj2, dt):
-        Logger.info('Explode: "{}" and "{}" have collided'.format(obj1, obj2))
-        self.collidables.remove(obj1)
-        self.collidables.remove(obj2)
+        print("Explosion between %s and %s" % (obj1, obj2))
+        print("----------------Collidable List on Impact: ", self.collidables)
+        Logger.info('Explode: "{}" and "{}" have collided: '.format(obj1, obj2))
+
+        try:
+            self.collidables.remove(obj1)
+        except: pass
+
+        try:
+            self.collidables.remove(obj2)
+        except: pass
+        print("+++++++++++++++Collidable List AFTER Impact", self.collidables)
+        try:
+            obj1.destroyed = True
+        except: pass
+
+        try:
+            obj2.destroyed = True
+        except: pass
 
         SoundManager.play_sfx(obj1.states['exploded']['sfx'])
         SoundManager.play_sfx(obj2.states['exploded']['sfx'])
 
-        SoundManager.remove_sfx(obj1.states['exploded']['sfx'], obj1)
-        SoundManager.remove_sfx(obj2.states['exploded']['sfx'], obj2)
+        try:
+            SoundManager.remove_sfx(obj1.states['exploded']['sfx'], obj1)
+        except: pass
+        try:
+            SoundManager.remove_sfx(obj2.states['exploded']['sfx'], obj2)
+        except: pass
 
         obj1.skin = obj1.states['exploded']['skin']
         obj2.skin = obj2.states['exploded']['skin']
 
-        Clock.schedule_once(partial(self.new_remove_widget, obj1), 1)
-        Clock.schedule_once(partial(self.new_remove_widget, obj2), 1)
+        Clock.schedule_once(partial(self.new_remove_widget, obj1), .3)
+        Clock.schedule_once(partial(self.new_remove_widget, obj2), .3)
 
     def my_popup(self):
         """ The popup that appears upon player death """
@@ -407,13 +430,14 @@ class CombatScreen(Screen):
             self.player
             )
 
-    def init_hostiles(self):
+    def init_hostiles(self, number):
         """Prepare the level's hostiles."""
-        self.spaceships.append(self.hostile)
-        SoundManager.add_sfx(
-            self.hostile.states['exploded']['sfx'],
-            self.hostile
-            )
+        for i in range(number):
+            self.spaceships.append(self.hostile)
+            SoundManager.add_sfx(
+                self.hostile.states['exploded']['sfx'],
+                self.hostile
+                )
 
     def start_soundtrack(self):
         """Choose and play music for the combat scene."""
