@@ -33,6 +33,7 @@ class BaseShip(Widget):
     def __init__(self, type='basic', dataset=None, **kwargs):
         super().__init__(type=type, dataset=dataset, **kwargs)
         self.weaponsound = None
+        self.destroyed = False
 
     def load(self, type):
         """Change the ship's type to another type in the dataset.
@@ -71,7 +72,8 @@ class HostileShip(BaseShip):
 
     def __init__(self, type='basic', dataset=hostiles, **kwargs):
         super().__init__(type=type, dataset=dataset, **kwargs)
-        self.destroyed = False
+        self.obj_type = "hostile_ship"
+
 
     def load(self, type, difficulty=None):
         """Change the ship's type to another type in the dataset.
@@ -147,6 +149,7 @@ class PlayerShip(BaseShip):
 
     def __init__(self, type='basic', dataset=players, **kwargs):
         super().__init__(type=type, dataset=dataset, **kwargs)
+        self.obj_type = "player_ship"
         self.lives = 3
         self.exp = 0
         self.level = 1

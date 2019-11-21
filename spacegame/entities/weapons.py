@@ -17,6 +17,7 @@ class BaseWeapons(Widget):
     def __init__(self, type='lasers', dataset=None, **kwargs):
         super().__init__(type=type, dataset=dataset, **kwargs)
         self.offscreen = False
+        self.destroyed = False
 
     def load(self, type):
         """Change the weapon to another type in the dataset.

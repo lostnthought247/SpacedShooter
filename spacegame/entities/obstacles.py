@@ -10,6 +10,7 @@ class BaseObstacle(Widget):
 
     def __init__(self, type='lg_asteroid', dataset=None, **kwargs):
         super().__init__(type=type, dataset=dataset, **kwargs)
+        self.destroyed = False
 
 
 class AsteroidObstacle(BaseObstacle):
@@ -18,6 +19,7 @@ class AsteroidObstacle(BaseObstacle):
     def __init__(self, type='lg_asteroid', dataset=obstacles, **kwargs):
         """Randomize the asteroid's speed and trajectory."""
         super().__init__(type=type, dataset=dataset, **kwargs)
+        self.obj_type = "asteroid"
 
     def randomize_trajectory(self):
         """Choose a random angle and speed for the asteroid."""

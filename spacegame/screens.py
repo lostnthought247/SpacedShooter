@@ -138,7 +138,8 @@ class CombatScreen(Screen):
         self.keyboard.bind(on_key_down=self.on_key_down)
         self.keyboard.bind(on_key_up=self.on_key_up)
 
-        self.score_label = CoreLabel(text="Score: 0")
+        self.score = 0
+        self.score_label = CoreLabel(text=str("Score: " + str(self.score)))
         self.score_label.refresh()
 
         # Create a set of pressed keys for the given moment
@@ -295,7 +296,6 @@ class CombatScreen(Screen):
         self.ids.GameView.remove_widget(widget_object)
 
     def detect_collisions(self, dt):
-
         # Creates list of current active shots/shells
         all_shells = []
         for shell in self.player.shells:
@@ -305,41 +305,54 @@ class CombatScreen(Screen):
 
         # loops through all non-shell objects looking for collisions
         for object in self.collidables:
-            for other_object in self.collidables:
-                # ignore self to self matches
-                if object != other_object:
-                    if object.collide_widget(other_object):
-                        Logger.info(
-                            'Collision Detection: '
-                            '{} and {} collided.'.format(object, other_object)
-                            )
-                        # Checks if players died
-                        if self.player == object or other_object == self.player:
-                            self.explosion(object, other_object, dt)
-                            # self.my_popup()
-
-                        else:
-                            # if non-player collision
-                            self.explosion(object, other_object, dt)
-
-
-            # Loops through current active shells checking for collisions
-            for shell in all_shells:
-                if object.collide_widget(shell):
-                    # ignores self friendly fire for player shells
-                    if object == self.player and shell.origin == "player":
-                        pass
-                    # ignores self friendly fire for hostile shells
-                    elif object == self.hostile and shell.origin == "hostile":
-                        pass
-                    # Triggers round end notification if player collides
-                    elif object == self.player or other_object == self.player:
-                        self.explosion(object, other_object, dt)
-                        # self.my_popup()
-
-                    # Removes object that collides with shells
+            if object.destroyed == True:
+                pass
+            else:
+                for other_object in self.collidables:
+                    if other_object.destroyed : pass
                     else:
-                        self.explosion(object, other_object, dt)
+                        # ignore self to self matches
+                        if object != other_object:
+                            if object.collide_widget(other_object):
+                                Logger.info(
+                                    'Collision Detection: '
+                                    '{} and {} collided.'.format(object, other_object)
+                                    )
+                                # Checks if players died
+                                if self.player == object or other_object == self.player:
+                                    self.explosion(object, other_object, dt)
+                                    # self.my_popup()
+
+                                else:
+                                    # if non-player collision
+                                    self.explosion(object, other_object, dt)
+
+                # Loops through current active shells checking for collisions
+                for shell in all_shells:
+                    if object.collide_widget(shell):
+                        # BugFix: Ignores any item on collide list marked as destroyed
+                        if object.destroyed == True :
+                            pass
+                        # ignores self friendly fire for player shells
+                        elif object == self.player and shell.origin == "player":
+                            pass
+                        # ignores self friendly fire for hostile shells
+                        elif object == self.hostile and shell.origin == "hostile":
+                            pass
+                        # Triggers round end notification if player collides
+                        elif object == self.player or other_object == self.player:
+                            self.explosion(object, other_object, dt)
+                            self.my_popup()
+                        # Adds points if player shoots something
+                        elif shell.origin == "player":
+                            self.explosion(object, other_object, dt)
+                            self.score += 1
+                            self.score_label.text = str("Score: " + str(self.score))
+                            self.score_label.refresh()
+
+                        # Removes object that collides with shells
+                        else:
+                            self.explosion(object, other_object, dt)
 
     def explosion(self, obj1, obj2, dt):
         print("Explosion between %s and %s" % (obj1, obj2))
