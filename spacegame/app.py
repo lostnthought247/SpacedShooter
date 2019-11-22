@@ -22,6 +22,7 @@ class SpaceGameApp(App):
     """
     difficulty = StringProperty('medium')
 
+
     def build(self):
         """Build the app and return an app object that can be run."""
         Logger.info('Application: Kivy has finally finished loading.')
@@ -42,4 +43,3 @@ class SpaceGameApp(App):
             'Application: '
             'Setting the game difficulty to "{}".'.format(difficulty)
             )
-        self.difficulty = difficulty

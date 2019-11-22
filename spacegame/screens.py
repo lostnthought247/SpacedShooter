@@ -122,7 +122,7 @@ class CombatScreen(Screen):
     hostile = ObjectProperty(None)
     shiptype = StringProperty(None)
     updater = None
-    lives = NumericProperty(None)
+    #lives = NumericProperty(None)
     new_round = True
     objects = []
     shells = []
@@ -130,6 +130,7 @@ class CombatScreen(Screen):
     explosions = ListProperty()
     hostile_odd_move = True
     random_select_action = None
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -141,6 +142,8 @@ class CombatScreen(Screen):
         self.score = 0
         self.score_label = CoreLabel(text=str("Score: " + str(self.score)))
         self.score_label.refresh()
+
+        self.level = 1
 
         # Create a set of pressed keys for the given moment
         self.keysPressed = set()
@@ -162,10 +165,11 @@ class CombatScreen(Screen):
         # Populate round/level objects and collidable lists
         self.collidables = []
         self.spaceships = []
-        self.init_players()
-        self.init_hostiles(4)
-        for i in range(4):
-            self.generate_asteroid()
+
+        # Sets the combat stage/hostiles based on players level
+        self.set_level_hostiles()
+
+
         for asteroid in self.asteroids:
             self.collidables.append(asteroid)
         for ship in self.spaceships:
@@ -192,6 +196,24 @@ class CombatScreen(Screen):
         """Act on a key being released up."""
         Logger.debug('KeyUp Event: Keycode[1] is "{}"'.format(keycode[1]))
         self.keysPressed.remove(keycode[1])
+
+    def set_level_hostiles(self):
+        if self.level == 1:
+            self.init_players()
+            self.init_hostiles(4)
+            for i in range(4):
+                self.generate_asteroid()
+        elif self.level == 2:
+            self.init_players()
+            self.init_hostiles(4)
+            for i in range(6):
+                self.generate_asteroid()
+        elif self.level == 3:
+            self.init_players()
+            self.init_hostiles(4)
+            for i in range(9):
+                self.generate_asteroid()
+
 
     def accelerate_hero(
         self, unit, physics=physics
@@ -342,7 +364,7 @@ class CombatScreen(Screen):
                         # Triggers round end notification if player collides
                         elif object == self.player or other_object == self.player:
                             self.explosion(object, other_object, dt)
-                            self.my_popup()
+                            self.player_killed_popup()
                         # Adds points if player shoots something
                         elif shell.origin == "player":
                             self.explosion(object, other_object, dt)
@@ -391,7 +413,7 @@ class CombatScreen(Screen):
         Clock.schedule_once(partial(self.new_remove_widget, obj1), .3)
         Clock.schedule_once(partial(self.new_remove_widget, obj2), .3)
 
-    def my_popup(self):
+    def player_killed_popup(self):
         """ The popup that appears upon player death """
 
         # creates/formats popup content
